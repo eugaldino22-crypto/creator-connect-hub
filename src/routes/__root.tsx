@@ -23,12 +23,7 @@ function NotFoundComponent() {
         <h2 className="mt-4 text-xl font-semibold text-foreground">{t("notFound", locale)}</h2>
         <p className="mt-2 text-sm text-muted-foreground">{t("error", locale)}</p>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            {t("backHome", locale)}
-          </Link>
+          <Link to="/" className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">{t("backHome", locale)}</Link>
           <LanguageSwitcher />
         </div>
       </div>
@@ -40,9 +35,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const locale = useLocale();
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+  useEffect(() => { reportLovableError(error, { boundary: "tanstack_root_error_component" }); }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -50,21 +43,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         <h1 className="text-xl font-semibold tracking-tight text-foreground">{t("error", locale)}</h1>
         <p className="mt-2 text-sm text-muted-foreground">{t("retry", locale)}</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            {t("retry", locale)}
-          </button>
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-full border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            {t("backHome", locale)}
-          </Link>
+          <button onClick={() => { router.invalidate(); reset(); }} className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90">{t("retry", locale)}</button>
+          <Link to="/" className="inline-flex items-center justify-center rounded-full border border-input bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-accent">{t("backHome", locale)}</Link>
           <LanguageSwitcher compact />
         </div>
       </div>
@@ -78,16 +58,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "SECRET — Global creator subscriptions" },
-      {
-        name: "description",
-        content: "SECRET is a global platform where creators build communities, publish content and earn recurring revenue.",
-      },
+      { name: "description", content: "SECRET is a global platform where creators build communities, publish content and earn recurring revenue." },
       { name: "author", content: "SECRET" },
       { property: "og:title", content: "SECRET — Global creator subscriptions" },
-      {
-        property: "og:description",
-        content: "A global platform for creators, subscribers and communities.",
-      },
+      { property: "og:description", content: "A global platform for creators, subscribers and communities." },
       { property: "og:type", content: "website" },
       { property: "og:image", content: "/secret-mark.svg" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -108,11 +82,9 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <HeadContent />
+        <script src="https://cdn.jsdelivr.net/npm/livekit-client@2.21.0/dist/livekit-client.umd.min.js" defer />
       </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
+      <body>{children}<Scripts /></body>
     </html>
   );
 }
@@ -120,16 +92,11 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const locale = useLocale();
-
-  useEffect(() => {
-    applyLocaleToDocument(locale);
-  }, [locale]);
+  useEffect(() => { applyLocaleToDocument(locale); }, [locale]);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="fixed right-3 top-3 z-[100]">
-        <LanguageSwitcher />
-      </div>
+      <div className="fixed right-3 top-3 z-[100]"><LanguageSwitcher /></div>
       <Outlet />
     </QueryClientProvider>
   );
