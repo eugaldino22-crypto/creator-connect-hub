@@ -21,7 +21,7 @@ function Index() {
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,rgba(184,76,255,0.16),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(255,79,216,0.09),transparent_28%)]" />
 
-      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-6 lg:px-8">
+      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-8 px-6 py-6 lg:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="SECRET home">
           <SecretMark />
           <div>
@@ -31,17 +31,20 @@ function Index() {
             </div>
           </div>
         </Link>
-        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+
+        <div className="flex shrink-0 items-center gap-4 sm:gap-5">
           <Link
             to="/"
-            className="hidden rounded-full px-3 py-2 text-sm text-muted-foreground transition hover:text-foreground sm:inline-flex"
+            className="hidden rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
           >
             Para criadores
           </Link>
-          <LanguageSwitcher compact />
+
+          <LanguageSwitcher />
+
           <Link
             to="/auth"
-            className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium transition hover:bg-white/[0.08]"
+            className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-semibold transition hover:bg-white/[0.08]"
           >
             Entrar
           </Link>
