@@ -1,51 +1,49 @@
 # SECRET
 
-A SECRET é uma plataforma própria de assinatura e comunidade para criadores. O produto foi estruturado para conectar criadores e assinantes em uma experiência premium, mobile-first e preparada para escalar.
+A SECRET é uma plataforma global de assinatura e comunidade para criadores. O produto conecta criadores e assinantes em uma experiência premium, mobile-first e preparada para escalar.
 
-## MVP
+## Produto
 
-O produto contempla três experiências principais:
+O projeto contempla quatro experiências principais:
 
-1. **Assinante** — descobrir criadores, acompanhar conteúdo e assinar comunidades.
-2. **Criador** — criar perfil, definir planos, publicar conteúdo e acompanhar assinantes e receita.
-3. **Administrador** — moderar usuários, criadores, conteúdo, denúncias, transações e saques.
+1. **Assinante** — descobrir criadores, acompanhar conteúdo, assinar comunidades e conversar.
+2. **Criador** — criar perfil, definir planos, publicar conteúdo, acompanhar assinantes e administrar receita.
+3. **Admin** — operar moderação, suporte, denúncias, transações e saques.
+4. **Super Admin** — governança global, papéis, auditoria, segurança, configurações e pagamentos.
 
-### Fluxo principal
+A SECRET trabalha com **15% de comissão sobre a receita das assinaturas**, mantendo **85% para o criador**, antes de taxas de processamento e demais encargos aplicáveis e transparentemente divulgados.
 
-Criador cria perfil → define assinatura → publica conteúdo → assinante descobre → assina → acessa conteúdo exclusivo → plataforma registra receita, comissão e saldo do criador.
+## Plataforma
 
-A SECRET trabalha com **15% de comissão sobre a receita das assinaturas**, mantendo **85% para o criador**, com taxas de processamento e demais encargos tratados de forma transparente conforme o gateway e a operação.
+- React + TypeScript + TanStack Start
+- Tailwind CSS + shadcn/ui
+- Supabase Auth + PostgreSQL + Storage + RLS
+- CI com GitHub Actions para lint e build
+- Internacionalização com 32 locales e suporte RTL
+- Moeda de referência global: USD
+- Pagamentos desacoplados, com NOWPayments planejado para cripto e webhooks reais
 
 ## Segurança
 
-A aplicação usa Supabase para autenticação, PostgreSQL, Storage e RLS. Conteúdo exclusivo deve permanecer protegido e não pode ficar publicamente acessível apenas porque alguém conhece o caminho do arquivo.
+Conteúdo exclusivo deve permanecer protegido e não pode ficar publicamente acessível apenas por conhecer o caminho do arquivo. Papéis administrativos são protegidos por RLS e guards de rota. Credenciais, chaves privadas, service-role keys e segredos de webhook nunca devem ser armazenados no Git.
 
-## Design
+## Identidade
 
-A identidade da SECRET é própria, premium e moderna, com foco em experiência mobile, conteúdo visual e comunidades. A interface usa Sora/Inter, fundo escuro e acentos em violeta/magenta.
-
-## Regras de produto
-
-- Não copiar identidade, logo ou elementos proprietários de outras plataformas.
-- Não criar pagamentos falsos; a integração deve permanecer desacoplada até a configuração de um gateway real.
-- Não expor conteúdo privado.
-- A plataforma é neutra e pode atender diferentes categorias de criadores.
-- Não usar dados fictícios como se fossem dados reais de produção.
-- Priorizar componentes reutilizáveis, segurança e uma experiência funcional.
+A marca oficial do produto é **SECRET**. A identidade visual usa Sora/Inter, fundo escuro e acentos em violeta/magenta, com elementos próprios e sem copiar identidades proprietárias de terceiros.
 
 ## Desenvolvimento com Lovable
 
-Este projeto é sincronizado com o [Lovable](https://lovable.dev).
-
-Continue desenvolvendo no [editor do projeto](https://lovable.dev/projects/b78b2fec-9703-4066-84e5-331ed50f9245).
-
-As alterações feitas no Lovable são sincronizadas com este repositório.
+O projeto é sincronizado com [Lovable](https://lovable.dev). Alterações feitas na branch conectada podem ser sincronizadas com o editor do projeto.
 
 ## Desenvolvimento local
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+bun install
+bun run dev
 ```
+
+Configure as variáveis de ambiente a partir de `.env.example`.
+
+## Auditoria do repositório
+
+A estrutura atual foi revisada para manter somente arquivos relacionados à SECRET, ao stack da aplicação, ao Supabase, à CI e à integração com Lovable. O registro da auditoria está em `docs/REPOSITORY_AUDIT.md`.
