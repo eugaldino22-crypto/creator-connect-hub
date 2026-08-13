@@ -127,6 +127,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <div className="fixed right-3 top-3 z-[100]">
+        <LanguageSwitcher />
+      </div>
       <Outlet />
     </QueryClientProvider>
   );
