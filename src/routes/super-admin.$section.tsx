@@ -1,10 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
 import { RoleGate } from "@/components/auth/RoleGate";
 import { AppShell } from "@/components/layout/AppShell";
-import { EmptyBlock, LoadingBlock } from "@/components/common/StateBlocks";
-import { supabase } from "@/integrations/supabase/client";
-import { PAYMENTS } from "@/lib/payments";
+import { SuperAdminOverview } from "@/components/admin/SuperAdminOverview";
+import { SuperAdminSettingsPanel } from "@/components/admin/SuperAdminSettingsPanel";
+import { SuperAdminAuditPanel } from "@/components/admin/SuperAdminAuditPanel";
 
-export const Route = createFileRoute("/super-admin/$section")({ component: SuperSection });
-function SuperSection(){const {section}=Route.useParams(); if(section==="payments") return <RoleGate allowed={["super_admin"]}><AppShell title="Pagamentos"><div className="surface-card p-6"><p className="text-sm text-muted-foreground">Provedor planejado</p><p className="mt-2 text-2xl font-semibold">{PAYMENTS.provider}</p><div className="mt-4 grid gap-3 sm:grid-cols-3"><div><p className="text-xs text-muted-foreground">Moeda</p><p className="font-semibold">{PAYMENTS.currency}</p></div><div><p className="text-xs text-muted-foreground">Comissão</p><p className="font-semibold">15%</p></div><div><p className="text-xs text-muted-foreground">Status</p><p className="font-semibold">Aguardando credenciais</p></div></div><p className="mt-5 text-sm text-muted-foreground">Nenhuma chave ou segredo é exibido nesta tela. O checkout só será ativado após configuração segura do gateway e webhook.</p></div></AppShell></RoleGate>; const table=section==="admins"?"user_roles":section==="audit"?"audit_logs":section==="settings"?"platform_settings":section==="finance"?"transactions":section==="security"?"profiles":"user_roles"; const q=useQuery({queryKey:["super",table],queryFn:async()=>{const {data,error}=await supabase.from(table as any).select("*").order("created_at",{ascending:false}).limit(100);if(error)throw error;return data??[];}}); return <RoleGate allowed={["super_admin"]}><AppShell title={`Super Admin · ${section}`}><h2 className="text-2xl font-semibold capitalize">{section}</h2><p className="mt-1 text-sm text-muted-foreground">Área reservada ao controle global.</p><div className="mt-6 surface-card overflow-hidden">{q.isLoading?<LoadingBlock/>:q.error?<EmptyBlock title="Acesso aos dados falhou" description="Verifique o estado do banco e as políticas RLS."/>:q.data?.length===0?<EmptyBlock title="Sem registros" description="Nenhum registro foi encontrado."/>:<div className="overflow-x-auto"><table className="w-full text-sm"><thead className="border-b border-border text-left text-muted-foreground"><tr><th className="px-4 py-3">ID</th><th className="px-4 py-3">Informação</th><th className="px-4 py-3">Data</th></tr></thead><tbody>{q.data?.map((r:any)=><tr key={r.id??r.key} className="border-b border-border/60"><td className="px-4 py-3 font-mono text-xs">{r.id??r.key}</td><td className="max-w-[480px] truncate px-4 py-3">{r.action??r.key??r.role??r.currency??"Registro"}</td><td className="px-4 py-3 text-muted-foreground">{r.created_at?new Date(r.created_at).toLocaleString("pt-BR"):r.updated_at?new Date(r.updated_at).toLocaleString("pt-BR"):"—"}</td></tr>)}</tbody></table></div>}</div></AppShell></RoleGate>}
+export const Route = createFileRoute("/super-admin/$section")({ component: SuperAdminSection });
+function SuperAdminSection(){
+ const {section}=Route.useParams();
+ return <RoleGate allowed={["super_admin"]}><AppShell title={`Super Admin · ${section}`}>
+  {section==="settings"?<SuperAdminSettingsPanel/>:section==="audit"?<SuperAdminAuditPanel/>:<SuperAdminOverview/>}
+ </AppShell></RoleGate>;
+}
