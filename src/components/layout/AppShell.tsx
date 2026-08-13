@@ -11,6 +11,7 @@ import {
   Shield,
   Sparkles,
   Wallet,
+  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser, hasRole } from "@/hooks/use-session";
@@ -36,11 +37,13 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
   const isCreator = hasRole(data?.roles, "creator");
   const isAdmin = hasRole(data?.roles, "admin");
+  const isSuperAdmin = hasRole(data?.roles, "super_admin");
 
   const nav: NavItem[] = [
     ...primaryNav,
     ...(isCreator ? [{ to: "/studio", label: "Studio", icon: LayoutDashboard }] : []),
     ...(isAdmin ? [{ to: "/admin", label: "Administração", icon: Shield }] : []),
+    ...(isSuperAdmin ? [{ to: "/super-admin", label: "Super Admin", icon: Crown }] : []),
   ];
 
   async function signOut() {
