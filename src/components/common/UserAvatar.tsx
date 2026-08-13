@@ -18,9 +18,9 @@ export function UserAvatar({
   path,
   className,
 }: {
-  name?: string | null;
-  path?: string | null;
-  className?: string;
+  name?: string | null | undefined;
+  path?: string | null | undefined;
+  className?: string | undefined;
 }) {
   const { data: url } = useStorageUrl(PUBLIC_BUCKET, path);
   return (
