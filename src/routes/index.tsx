@@ -134,7 +134,7 @@ function Index() {
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <div className="text-xs text-muted-foreground">Assinatura mensal</div>
-                        <div className="mt-1 text-lg font-semibold">R$ 19,90</div>
+                        <div className="mt-1 text-lg font-semibold">R$ 80,00</div>
                       </div>
                       <div className="rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-brand-foreground">Assinar</div>
                     </div>
@@ -142,8 +142,8 @@ function Index() {
                 </div>
 
                 <div className="space-y-3">
-                  <OfferPreview icon={<Video className="h-4 w-4" />} title="Videochamada" text="30 minutos · R$ 89,90" action="Fazer proposta" />
-                  <OfferPreview icon={<Package className="h-4 w-4" />} title="Item exclusivo" text="Peça única · R$ 249,90" action="Comprar" />
+                  <OfferPreview icon={<Video className="h-4 w-4" />} title="Videochamada" text="30 minutos · R$ 150,00" action="Fazer proposta" />
+                  <OfferPreview icon={<Package className="h-4 w-4" />} title="Item exclusivo" text="Peça única · R$ 500,00" action="Comprar" />
                   <div className="rounded-xl border border-brand/15 bg-white/[0.025] p-4">
                     <div className="flex items-center gap-2 text-sm font-medium">
                       <WandSparkles className="h-4 w-4 text-brand" />
@@ -230,10 +230,10 @@ function Index() {
               <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted-foreground">Criador</div>
             </div>
             <div className="mt-5 space-y-3">
-              <DashboardOffer icon={<LockKeyhole />} title="Assinatura mensal" value="R$ 19,90 / mês" status="Ativa" />
-              <DashboardOffer icon={<Video />} title="Videochamada" value="A partir de R$ 89,90" status="Disponível" />
+              <DashboardOffer icon={<LockKeyhole />} title="Assinatura mensal" value="R$ 80,00 / mês" status="Ativa" />
+              <DashboardOffer icon={<Video />} title="Videochamada" value="A partir de R$ 150,00" status="Disponível" />
               <DashboardOffer icon={<Gift />} title="Experiência personalizada" value="Permitir propostas" status="Negociável" />
-              <DashboardOffer icon={<Package />} title="Item exclusivo" value="R$ 249,90" status="Disponível" />
+              <DashboardOffer icon={<Package />} title="Item exclusivo" value="R$ 500,00" status="Disponível" />
             </div>
           </div>
         </div>
