@@ -11,7 +11,7 @@ function SecretMark() {
     <img
       src="/secret-mark.svg"
       alt="SECRET"
-      className="h-11 w-11 rounded-xl shadow-[0_0_35px_rgba(184,76,255,0.22)]"
+      className="h-10 w-10 shrink-0 rounded-xl shadow-[0_0_35px_rgba(184,76,255,0.22)] sm:h-11 sm:w-11"
     />
   );
 }
@@ -21,18 +21,18 @@ function Index() {
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,rgba(184,76,255,0.16),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(255,79,216,0.09),transparent_28%)]" />
 
-      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-8 px-6 py-6 lg:px-8">
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="SECRET home">
+      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-3 px-4 py-5 sm:gap-5 sm:px-6 sm:py-6 lg:px-8">
+        <Link to="/" className="flex min-w-0 shrink items-center gap-2.5 sm:gap-3" aria-label="SECRET home">
           <SecretMark />
-          <div>
-            <div className="font-display text-xl font-semibold tracking-[0.24em]">SECRET</div>
-            <div className="text-[9px] uppercase tracking-[0.34em] text-muted-foreground">
+          <div className="min-w-0">
+            <div className="font-display text-lg font-semibold tracking-[0.2em] sm:text-xl sm:tracking-[0.24em]">SECRET</div>
+            <div className="hidden text-[9px] uppercase tracking-[0.34em] text-muted-foreground sm:block">
               sua comunidade exclusiva
             </div>
           </div>
         </Link>
 
-        <div className="flex shrink-0 items-center gap-4 sm:gap-5">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-4">
           <Link
             to="/"
             className="hidden rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground sm:inline-flex"
@@ -40,21 +40,21 @@ function Index() {
             Para criadores
           </Link>
 
-          <LanguageSwitcher />
+          <LanguageSwitcher compact />
 
           <Link
             to="/auth"
-            className="rounded-full border border-white/10 bg-white/[0.04] px-5 py-2.5 text-sm font-semibold transition hover:bg-white/[0.08]"
+            className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.08] sm:px-5"
           >
             Entrar
           </Link>
         </div>
       </nav>
 
-      <section className="relative z-10 mx-auto grid min-h-[calc(100vh-96px)] w-full max-w-7xl items-center gap-14 px-6 pb-20 pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:pb-28">
+      <section className="relative z-10 mx-auto grid min-h-[calc(100vh-88px)] w-full max-w-7xl items-center gap-14 px-4 pb-16 pt-8 sm:px-6 sm:pb-20 sm:pt-10 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:pb-28">
         <div className="max-w-2xl">
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-4 py-2 text-xs font-medium text-brand">
-            <Sparkles className="h-3.5 w-3.5" />
+          <div className="mb-7 inline-flex max-w-full items-center gap-2 rounded-full border border-brand/20 bg-brand/5 px-4 py-2 text-xs font-medium text-brand">
+            <Sparkles className="h-3.5 w-3.5 shrink-0" />
             Uma nova forma de criar comunidades
           </div>
 
@@ -145,14 +145,14 @@ function Index() {
       </section>
 
       <section className="relative z-10 border-t border-white/5 bg-black/10">
-        <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-16 sm:grid-cols-3 lg:px-8">
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-16 sm:px-6 sm:grid-cols-3 lg:px-8">
           <Feature title="Assinaturas recorrentes" text="Crie planos e transforme sua comunidade em receita previsível." />
           <Feature title="Conteúdo exclusivo" text="Publique para todos ou libere experiências especiais para assinantes." />
           <Feature title="Você fica com 85%" text="A SECRET trabalha com uma comissão de 15% sobre a receita das assinaturas." />
         </div>
       </section>
 
-      <footer className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-3 border-t border-white/5 px-6 py-8 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between lg:px-8">
+      <footer className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-3 border-t border-white/5 px-4 py-8 text-xs text-muted-foreground sm:px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
         <div className="tracking-[0.18em]">SECRET</div>
         <div>Sua comunidade. Seu conteúdo. Seu espaço.</div>
       </footer>
