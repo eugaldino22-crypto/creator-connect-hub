@@ -16,21 +16,17 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser, hasRole } from "@/hooks/use-session";
 import { UserAvatar } from "@/components/common/UserAvatar";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { BRAND } from "@/lib/brand";
+import { useLocale, t } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string; icon: typeof Compass };
 
-const primaryNav: NavItem[] = [
-  { to: "/feed", label: "Meu feed", icon: Newspaper },
-  { to: "/explore", label: "Explorar", icon: Compass },
-  { to: "/messages", label: "Mensagens", icon: MessageCircle },
-  { to: "/subscriptions", label: "Assinaturas", icon: Wallet },
-];
-
 export function AppShell({ children, title }: { children: ReactNode; title?: string }) {
   const { data } = useCurrentUser();
+  const locale = useLocale();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -40,10 +36,13 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
   const isSuperAdmin = hasRole(data?.roles, "super_admin");
 
   const nav: NavItem[] = [
-    ...primaryNav,
-    ...(isCreator ? [{ to: "/studio", label: "Studio", icon: LayoutDashboard }] : []),
-    ...(isAdmin ? [{ to: "/admin", label: "Administração", icon: Shield }] : []),
-    ...(isSuperAdmin ? [{ to: "/super-admin", label: "Super Admin", icon: Crown }] : []),
+    { to: "/feed", label: t("feed", locale), icon: Newspaper },
+    { to: "/explore", label: t("explore", locale), icon: Compass },
+    { to: "/messages", label: t("messages", locale), icon: MessageCircle },
+    { to: "/subscriptions", label: t("subscriptions", locale), icon: Wallet },
+    ...(isCreator ? [{ to: "/studio", label: t("studio", locale), icon: LayoutDashboard }] : []),
+    ...(isAdmin ? [{ to: "/admin", label: t("admin", locale), icon: Shield }] : []),
+    ...(isSuperAdmin ? [{ to: "/super-admin", label: t("superAdmin", locale), icon: Crown }] : []),
   ];
 
   async function signOut() {
@@ -83,12 +82,12 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
         <div className="mt-4 flex items-center gap-3 rounded-xl border border-sidebar-border p-3">
           <UserAvatar name={data?.profile?.display_name} path={data?.profile?.avatar_url} className="size-9" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium">{data?.profile?.display_name ?? "Minha conta"}</p>
+            <p className="truncate text-sm font-medium">{data?.profile?.display_name ?? t("account", locale)}</p>
             <p className="truncate text-xs text-muted-foreground">
               {data?.profile?.username ? `@${data.profile.username}` : data?.user.email}
             </p>
           </div>
-          <Button variant="ghost" size="icon" aria-label="Sair" onClick={signOut}>
+          <Button variant="ghost" size="icon" aria-label={t("signOut", locale)} onClick={signOut}>
             <LogOut className="size-4" />
           </Button>
         </div>
@@ -103,13 +102,14 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
             <span className="font-display text-base font-semibold">{BRAND.name}</span>
           </div>
           <h1 className="hidden text-lg font-semibold lg:block">{title}</h1>
-          <div className="flex items-center gap-1">
-            <Button asChild variant="ghost" size="icon" aria-label="Notificações">
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher compact />
+            <Button asChild variant="ghost" size="icon" aria-label={t("notifications", locale)}>
               <Link to="/notifications">
                 <Bell className="size-5" />
               </Link>
             </Button>
-            <Button variant="ghost" size="icon" aria-label="Sair" className="lg:hidden" onClick={signOut}>
+            <Button variant="ghost" size="icon" aria-label={t("signOut", locale)} className="lg:hidden" onClick={signOut}>
               <LogOut className="size-5" />
             </Button>
           </div>
