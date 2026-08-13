@@ -32,50 +32,53 @@ function SecretMark() {
 
 function Index() {
   return (
-    <main className="min-h-screen overflow-hidden bg-background text-foreground">
+    <main className="min-h-screen overflow-hidden bg-background pt-[78px] text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_78%_12%,rgba(184,76,255,0.07),transparent_28%),radial-gradient(circle_at_12%_48%,rgba(255,79,216,0.025),transparent_30%)]" />
 
-      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-4 border-b border-white/5 px-4 py-5 sm:px-6 lg:px-8">
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="SECRET home">
-          <SecretMark />
-          <div className="min-w-0">
-            <div className="font-display text-lg font-semibold tracking-[0.22em] sm:text-xl sm:tracking-[0.24em]">
-              SECRET
+      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-background/90 backdrop-blur-xl">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-4 py-5 sm:px-6 lg:px-8">
+          <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="SECRET home">
+            <SecretMark />
+            <div className="min-w-0">
+              <div className="font-display text-lg font-semibold tracking-[0.22em] sm:text-xl sm:tracking-[0.24em]">
+                SECRET
+              </div>
+              <div className="hidden text-[9px] uppercase tracking-[0.34em] text-muted-foreground sm:block">
+                sua comunidade exclusiva
+              </div>
             </div>
-            <div className="hidden text-[9px] uppercase tracking-[0.34em] text-muted-foreground sm:block">
-              sua comunidade exclusiva
-            </div>
-          </div>
-        </Link>
-
-        <div className="hidden items-center gap-1.5 md:flex">
-          <a
-            href="#criadores"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
-          >
-            Para criadores
-          </a>
-          <a
-            href="#assinantes"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
-          >
-            Para assinantes
-          </a>
-          <a
-            href="#como-funciona"
-            className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
-          >
-            Como funciona
-          </a>
-        </div>
-
-        <div className="flex shrink-0 items-center gap-2">
-          <Link
-            to="/auth"
-            className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.06] sm:px-5"
-          >
-            Entrar
           </Link>
+
+          <div className="hidden items-center gap-1.5 md:flex">
+            <a
+              href="#criadores"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
+            >
+              Para criadores
+            </a>
+            <a
+              href="#assinantes"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
+            >
+              Para assinantes
+            </a>
+            <a
+              href="#como-funciona"
+              className="rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition hover:bg-white/[0.03] hover:text-foreground"
+            >
+              Como funciona
+            </a>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <LanguageSwitcher compact />
+            <Link
+              to="/auth"
+              className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.06] sm:px-5"
+            >
+              Entrar
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -241,11 +244,11 @@ function Index() {
         </div>
 
         <div className="mt-12 grid gap-4 md:grid-cols-5">
-          <StepCard number="01" icon={<Users />} title="Descubra" text="Encontre criadores e comunidades que combinam com você." />
-          <StepCard number="02" icon={<LockKeyhole />} title="Assine" text="Assine o plano que dá acesso ao conteúdo exclusivo." />
-          <StepCard number="03" icon={<Send />} title="Proponha" text="Escolha uma experiência e envie sua proposta ao criador." />
-          <StepCard number="04" icon={<Heart />} title="Negocie" text="Combine valores, detalhes e condições diretamente." />
-          <StepCard number="05" icon={<Check />} title="Viva a experiência" text="Com pagamento seguro e tudo organizado na SECRET." />
+          <StepCard icon={<Users />} title="Descubra" text="Encontre criadores e comunidades que combinam com você." />
+          <StepCard icon={<LockKeyhole />} title="Assine" text="Assine o plano que dá acesso ao conteúdo exclusivo." />
+          <StepCard icon={<Send />} title="Proponha" text="Escolha uma experiência e envie sua proposta ao criador." />
+          <StepCard icon={<Heart />} title="Negocie" text="Combine valores, detalhes e condições diretamente." />
+          <StepCard icon={<Check />} title="Viva a experiência" text="Com pagamento seguro e tudo organizado na SECRET." />
         </div>
       </section>
 
@@ -415,27 +418,21 @@ function FeatureCard({
 }
 
 function StepCard({
-  number,
   icon,
   title,
   text,
 }: {
-  number: string;
   icon: React.ReactNode;
   title: string;
   text: string;
 }) {
   return (
-    <div className="relative rounded-2xl border border-white/8 bg-white/[0.018] p-5">
-      <div className="flex items-center justify-between">
-        <div className="flex size-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.025] text-brand">
-          {icon}
-        </div>
-        <span className="text-xs font-semibold text-muted-foreground">{number}</span>
+    <div className="rounded-2xl border border-white/8 bg-white/[0.018] p-5">
+      <div className="flex size-10 items-center justify-center rounded-xl border border-white/8 bg-white/[0.025] text-brand">
+        {icon}
       </div>
       <h3 className="mt-5 text-sm font-semibold">{title}</h3>
       <p className="mt-2 text-xs leading-5 text-muted-foreground">{text}</p>
-      <ChevronRight className="mt-4 h-4 w-4 text-white/25" />
     </div>
   );
 }
