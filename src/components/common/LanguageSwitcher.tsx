@@ -18,7 +18,7 @@ export function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
         className={compact ? "h-9 w-10 justify-center px-0" : "h-9 w-[170px]"}
       >
         <Globe2 className="size-4 shrink-0" />
-        {!compact ? <SelectValue /> : <span className="sr-only">{t("language", locale)}</span>}
+        <SelectValue className={compact ? "sr-only" : undefined} />
       </SelectTrigger>
       <SelectContent align="end" className="max-h-[70vh]">
         {LOCALES.map((item) => (
