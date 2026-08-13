@@ -27,7 +27,7 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
   useEffect(() => {
     if (isLoading || !data?.user || authorized) return;
     if (isCreator && subscriberPath) {
-      void navigate({ to: pathname === "/messages" ? "/studio/subscribers" : "/studio", replace: true });
+      void navigate({ to: pathname === "/messages" ? "/studio/messages" : "/studio", replace: true });
       return;
     }
     if (isCreator && subscriberOnly) {
