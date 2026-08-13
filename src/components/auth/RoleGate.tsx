@@ -4,7 +4,7 @@ import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { hasAnyRole, type AppRole, useCurrentUser } from "@/hooks/use-session";
 import { LoadingBlock } from "@/components/common/StateBlocks";
 
-const SUBSCRIBER_PATHS = new Set(["/feed", "/explore", "/subscriptions"]);
+const SUBSCRIBER_PATHS = new Set(["/feed", "/explore", "/subscriptions", "/messages"]);
 
 export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: ReactNode }) {
   const { data, isLoading } = useCurrentUser();
@@ -26,7 +26,11 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
 
   useEffect(() => {
     if (isLoading || !data?.user || authorized) return;
-    if (isCreator && (subscriberOnly || subscriberPath)) {
+    if (isCreator && subscriberPath) {
+      void navigate({ to: pathname === "/messages" ? "/studio/subscribers" : "/studio", replace: true });
+      return;
+    }
+    if (isCreator && subscriberOnly) {
       void navigate({ to: "/studio", replace: true });
       return;
     }
