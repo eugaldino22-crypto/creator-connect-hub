@@ -10,33 +10,164 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SectionRouteImport } from './routes/$section'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as StudioRouteImport } from './routes/studio'
+import { Route as SuperAdminRouteImport } from './routes/super-admin'
+import { Route as AdminSectionRouteImport } from './routes/admin.$section'
+import { Route as CUsernameRouteImport } from './routes/c/$username'
+import { Route as CheckoutPlanIdRouteImport } from './routes/checkout/$planId'
+import { Route as StudioSectionRouteImport } from './routes/studio.$section'
+import { Route as SuperAdminSectionRouteImport } from './routes/super-admin.$section'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SectionRoute = SectionRouteImport.update({
+  id: '/$section',
+  path: '/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MessagesRoute = MessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioRoute = StudioRouteImport.update({
+  id: '/studio',
+  path: '/studio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SuperAdminRoute = SuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSectionRoute = AdminSectionRouteImport.update({
+  id: '/$section',
+  path: '/$section',
+  getParentRoute: () => AdminRoute,
+} as any)
+const CUsernameRoute = CUsernameRouteImport.update({
+  id: '/c/$username',
+  path: '/c/$username',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutPlanIdRoute = CheckoutPlanIdRouteImport.update({
+  id: '/checkout/$planId',
+  path: '/checkout/$planId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudioSectionRoute = StudioSectionRouteImport.update({
+  id: '/$section',
+  path: '/$section',
+  getParentRoute: () => StudioRoute,
+} as any)
+const SuperAdminSectionRoute = SuperAdminSectionRouteImport.update({
+  id: '/$section',
+  path: '/$section',
+  getParentRoute: () => SuperAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$section': typeof SectionRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/messages': typeof MessagesRoute
+  '/studio': typeof StudioRouteWithChildren
+  '/super-admin': typeof SuperAdminRouteWithChildren
+  '/admin/$section': typeof AdminSectionRoute
+  '/c/$username': typeof CUsernameRoute
+  '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/studio/$section': typeof StudioSectionRoute
+  '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$section': typeof SectionRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/messages': typeof MessagesRoute
+  '/studio': typeof StudioRouteWithChildren
+  '/super-admin': typeof SuperAdminRouteWithChildren
+  '/admin/$section': typeof AdminSectionRoute
+  '/c/$username': typeof CUsernameRoute
+  '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/studio/$section': typeof StudioSectionRoute
+  '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$section': typeof SectionRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/messages': typeof MessagesRoute
+  '/studio': typeof StudioRouteWithChildren
+  '/super-admin': typeof SuperAdminRouteWithChildren
+  '/admin/$section': typeof AdminSectionRoute
+  '/c/$username': typeof CUsernameRoute
+  '/checkout/$planId': typeof CheckoutPlanIdRoute
+  '/studio/$section': typeof StudioSectionRoute
+  '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/$section'
+    | '/admin'
+    | '/messages'
+    | '/studio'
+    | '/super-admin'
+    | '/admin/$section'
+    | '/c/$username'
+    | '/checkout/$planId'
+    | '/studio/$section'
+    | '/super-admin/$section'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/$section'
+    | '/admin'
+    | '/messages'
+    | '/studio'
+    | '/super-admin'
+    | '/admin/$section'
+    | '/c/$username'
+    | '/checkout/$planId'
+    | '/studio/$section'
+    | '/super-admin/$section'
+  id:
+    | '__root__'
+    | '/'
+    | '/$section'
+    | '/admin'
+    | '/messages'
+    | '/studio'
+    | '/super-admin'
+    | '/admin/$section'
+    | '/c/$username'
+    | '/checkout/$planId'
+    | '/studio/$section'
+    | '/super-admin/$section'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SectionRoute: typeof SectionRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  MessagesRoute: typeof MessagesRoute
+  StudioRoute: typeof StudioRouteWithChildren
+  SuperAdminRoute: typeof SuperAdminRouteWithChildren
+  CUsernameRoute: typeof CUsernameRoute
+  CheckoutPlanIdRoute: typeof CheckoutPlanIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +179,121 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$section': {
+      id: '/$section'
+      path: '/$section'
+      fullPath: '/$section'
+      preLoaderRoute: typeof SectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/messages': {
+      id: '/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio': {
+      id: '/studio'
+      path: '/studio'
+      fullPath: '/studio'
+      preLoaderRoute: typeof StudioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/super-admin': {
+      id: '/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof SuperAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/$section': {
+      id: '/admin/$section'
+      path: '/$section'
+      fullPath: '/admin/$section'
+      preLoaderRoute: typeof AdminSectionRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/c/$username': {
+      id: '/c/$username'
+      path: '/c/$username'
+      fullPath: '/c/$username'
+      preLoaderRoute: typeof CUsernameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout/$planId': {
+      id: '/checkout/$planId'
+      path: '/checkout/$planId'
+      fullPath: '/checkout/$planId'
+      preLoaderRoute: typeof CheckoutPlanIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/studio/$section': {
+      id: '/studio/$section'
+      path: '/$section'
+      fullPath: '/studio/$section'
+      preLoaderRoute: typeof StudioSectionRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/super-admin/$section': {
+      id: '/super-admin/$section'
+      path: '/$section'
+      fullPath: '/super-admin/$section'
+      preLoaderRoute: typeof SuperAdminSectionRouteImport
+      parentRoute: typeof SuperAdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminSectionRoute: typeof AdminSectionRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminSectionRoute: AdminSectionRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface StudioRouteChildren {
+  StudioSectionRoute: typeof StudioSectionRoute
+}
+
+const StudioRouteChildren: StudioRouteChildren = {
+  StudioSectionRoute: StudioSectionRoute,
+}
+
+const StudioRouteWithChildren =
+  StudioRoute._addFileChildren(StudioRouteChildren)
+
+interface SuperAdminRouteChildren {
+  SuperAdminSectionRoute: typeof SuperAdminSectionRoute
+}
+
+const SuperAdminRouteChildren: SuperAdminRouteChildren = {
+  SuperAdminSectionRoute: SuperAdminSectionRoute,
+}
+
+const SuperAdminRouteWithChildren = SuperAdminRoute._addFileChildren(
+  SuperAdminRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SectionRoute: SectionRoute,
+  AdminRoute: AdminRouteWithChildren,
+  MessagesRoute: MessagesRoute,
+  StudioRoute: StudioRouteWithChildren,
+  SuperAdminRoute: SuperAdminRouteWithChildren,
+  CUsernameRoute: CUsernameRoute,
+  CheckoutPlanIdRoute: CheckoutPlanIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
