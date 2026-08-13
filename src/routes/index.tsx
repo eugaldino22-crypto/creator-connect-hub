@@ -1,5 +1,6 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowRight, Check, LockKeyhole, Sparkles, Users } from "lucide-react";
+import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -20,8 +21,8 @@ function Index() {
     <main className="min-h-screen overflow-hidden bg-background text-foreground">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_75%_18%,rgba(184,76,255,0.16),transparent_30%),radial-gradient(circle_at_20%_80%,rgba(255,79,216,0.09),transparent_28%)]" />
 
-      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
-        <Link to="/" className="flex items-center gap-3" aria-label="SECRET home">
+      <nav className="relative z-10 mx-auto flex w-full max-w-7xl items-center justify-between gap-6 px-6 py-6 lg:px-8">
+        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="SECRET home">
           <SecretMark />
           <div>
             <div className="font-display text-xl font-semibold tracking-[0.24em]">SECRET</div>
@@ -30,15 +31,16 @@ function Index() {
             </div>
           </div>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <Link
             to="/"
-            className="hidden rounded-full px-4 py-2 text-sm text-muted-foreground transition hover:text-foreground sm:inline-flex"
+            className="hidden rounded-full px-3 py-2 text-sm text-muted-foreground transition hover:text-foreground sm:inline-flex"
           >
             Para criadores
           </Link>
+          <LanguageSwitcher compact />
           <Link
-            to="/"
+            to="/auth"
             className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm font-medium transition hover:bg-white/[0.08]"
           >
             Entrar
@@ -65,7 +67,7 @@ function Index() {
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <Link
-              to="/"
+              to="/auth"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground shadow-[0_16px_45px_-18px_rgba(184,76,255,0.75)] transition hover:-translate-y-0.5"
             >
               Quero ser criador
