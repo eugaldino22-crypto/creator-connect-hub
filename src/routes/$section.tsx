@@ -149,6 +149,54 @@ function AuthPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  async function redirectAfterLogin() {
+    const { data: authData } = await supabase.auth.getUser();
+    const currentUser = authData.user;
+
+    if (!currentUser) {
+      setMessage("Sessão não encontrada. Faça login novamente.");
+      return;
+    }
+
+    const { data: roles, error } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", currentUser.id);
+
+    if (error) {
+      setMessage(error.message);
+      return;
+    }
+
+    const roleNames = (roles ?? []).map((item) => item.role);
+
+    await queryClient.invalidateQueries({
+      queryKey: ["current-user"],
+    });
+
+    if (roleNames.includes("super_admin")) {
+      await navigate({ to: "/super-admin" });
+      return;
+    }
+
+    if (roleNames.includes("admin")) {
+      await navigate({ to: "/admin" });
+      return;
+    }
+
+    if (roleNames.includes("creator")) {
+      await navigate({ to: "/studio" });
+      return;
+    }
+
+    if (roleNames.includes("subscriber")) {
+      await navigate({ to: "/feed" });
+      return;
+    }
+
+    await navigate({ to: "/onboarding" });
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -193,13 +241,7 @@ function AuthPage() {
       return;
     }
 
-    await queryClient.invalidateQueries({
-      queryKey: ["current-user"],
-    });
-
-    await navigate({
-      to: "/onboarding",
-    });
+    await redirectAfterLogin();
   }
 
   async function signInWithGoogle() {
@@ -314,11 +356,16 @@ function OnboardingPage() {
     }
 
     if (role === "creator") {
-      const { error: creatorError } = await supabase.from("creator_profiles").upsert({
-        user_id: data.user.id,
-        is_published: false,
-        commission_rate: 0.15,
-      });
+      const { error: creatorError } = await supabase.from("creator_profiles").upsert(
+        {
+          user_id: data.user.id,
+          is_published: false,
+          commission_rate: 0.15,
+        },
+        {
+          onConflict: "user_id",
+        },
+      );
 
       if (creatorError) {
         setBusy(false);
@@ -523,7 +570,7 @@ function FeedPage() {
             <LoadingBlock />
           ) : q.error ? (
             <ErrorBlock />
-          ) : q.data?.length === 0 ? (
+          ) : !q.data?.length ? (
             <EmptyBlock
               title="Seu feed está vazio"
               description="Siga ou assine criadores para começar a receber publicações."
@@ -691,7 +738,7 @@ function SubscriptionsPage() {
             <LoadingBlock />
           ) : q.error ? (
             <ErrorBlock />
-          ) : q.data?.length === 0 ? (
+          ) : !q.data?.length ? (
             <EmptyBlock
               title="Você ainda não assinou nenhum criador"
               description="Explore criadores e escolha uma comunidade para começar."
@@ -759,7 +806,7 @@ function MessagesPage() {
             <LoadingBlock />
           ) : q.error ? (
             <ErrorBlock />
-          ) : q.data?.length === 0 ? (
+          ) : !q.data?.length ? (
             <EmptyBlock
               title="Nenhuma conversa ainda"
               description="Quando você iniciar uma conversa com um criador, ela aparecerá aqui."
@@ -827,7 +874,7 @@ function NotificationsPage() {
             <LoadingBlock />
           ) : q.error ? (
             <ErrorBlock />
-          ) : q.data?.length === 0 ? (
+          ) : !q.data?.length ? (
             <EmptyBlock
               title="Tudo limpo"
               description="Você não tem novas notificações."
