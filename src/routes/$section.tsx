@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bell, Heart, Lock, LogIn, MessageCircle, UserRound, Users } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { RoleGate } from "@/components/auth/RoleGate";
@@ -15,7 +15,93 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-session";
 import { formatCents } from "@/lib/brand";
 
-export const Route = createFileRoute("/$section")({ component: SectionPage });
+type CreatorProfile = {
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+  cover_url: string | null;
+};
+
+type CreatorPlan = {
+  price_cents: number | null;
+  currency: string | null;
+};
+
+type CreatorRow = {
+  user_id: string;
+  headline: string | null;
+  category: string | null;
+  is_verified: boolean;
+  profiles: CreatorProfile | null;
+  subscription_plans: CreatorPlan[] | null;
+};
+
+type FeedProfile = {
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+type FeedPost = {
+  id: string;
+  creator_id: string;
+  title: string | null;
+  body: string | null;
+  visibility: string;
+  is_published: boolean;
+  like_count: number | null;
+  comment_count: number | null;
+  created_at: string;
+  profiles: FeedProfile | null;
+};
+
+type SubscriptionPlan = {
+  name: string | null;
+  price_cents: number | null;
+  currency: string | null;
+};
+
+type SubscriptionProfile = {
+  username: string | null;
+  display_name: string | null;
+};
+
+type SubscriptionRow = {
+  id: string;
+  status: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  subscription_plans: SubscriptionPlan | null;
+  profiles: SubscriptionProfile | null;
+};
+
+type ConversationProfile = {
+  username: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+type ConversationRow = {
+  id: string;
+  creator_id: string;
+  subscriber_id: string;
+  last_message_at: string | null;
+  profiles: ConversationProfile | null;
+};
+
+type NotificationRow = {
+  id: string;
+  type: string;
+  title: string;
+  body: string | null;
+  link: string | null;
+  is_read: boolean;
+  created_at: string;
+};
+
+export const Route = createFileRoute("/$section")({
+  component: SectionPage,
+});
 
 function useCreators() {
   return useQuery({
@@ -23,19 +109,31 @@ function useCreators() {
     queryFn: async (): Promise<CreatorSummary[]> => {
       const { data, error } = await supabase
         .from("creator_profiles")
-        .select("user_id, headline, category, is_verified, profiles(username,display_name,avatar_url,cover_url), subscription_plans(price_cents,currency)")
+        .select(
+          "user_id, headline, category, is_verified, profiles(username,display_name,avatar_url,cover_url), subscription_plans(price_cents,currency)",
+        )
         .eq("is_published", true)
         .order("created_at", { ascending: false });
+
       if (error) throw error;
-      return (data ?? []).map((row: any) => ({
-        user_id: row.user_id,
-        headline: row.headline,
-        category: row.category,
-        is_verified: row.is_verified,
-        profile: row.profiles,
-        cheapest_plan_cents: row.subscription_plans?.length ? Math.min(...row.subscription_plans.map((p: any) => p.price_cents)) : null,
-        currency: row.subscription_plans?.[0]?.currency ?? "USD",
-      }));
+
+      const rows = (data ?? []) as CreatorRow[];
+
+      return rows.map((row) => {
+        const plans = row.subscription_plans ?? [];
+
+        return {
+          user_id: row.user_id,
+          headline: row.headline,
+          category: row.category,
+          is_verified: row.is_verified,
+          profile: row.profiles,
+          cheapest_plan_cents: plans.length
+            ? Math.min(...plans.map((plan) => plan.price_cents ?? 0))
+            : null,
+          currency: plans[0]?.currency ?? "USD",
+        };
+      });
     },
     staleTime: 30_000,
   });
@@ -43,24 +141,806 @@ function useCreators() {
 
 function AuthPage() {
   const [mode, setMode] = useState<"login" | "signup">("login");
-  const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [name, setName] = useState(""); const [message, setMessage] = useState(""); const [loading, setLoading] = useState(false); const navigate = useNavigate();
-  async function submit(e: React.FormEvent) { e.preventDefault(); setLoading(true); setMessage(""); const result = mode === "login" ? await supabase.auth.signInWithPassword({ email, password }) : await supabase.auth.signUp({ email, password, options: { data: { display_name: name } } }); setLoading(false); if (result.error) return setMessage(result.error.message); if (mode === "signup") setMessage("Conta criada. Verifique seu e-mail se a confirmação estiver habilitada."); else navigate({ to: "/onboarding" }); }
-  return <div className="min-h-screen bg-background px-4 py-10"><div className="mx-auto max-w-md surface-card p-7"><div className="mb-7 text-center"><div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-brand-gradient text-brand-foreground"><LogIn className="size-6" /></div><h1 className="text-2xl font-semibold">Entre na SECRET</h1><p className="mt-2 text-sm text-muted-foreground">Sua comunidade. Seu conteúdo. Seu espaço.</p></div><form onSubmit={submit} className="space-y-4">{mode === "signup" && <Input placeholder="Nome" value={name} onChange={e=>setName(e.target.value)} required />}<Input type="email" placeholder="E-mail" value={email} onChange={e=>setEmail(e.target.value)} required /><Input type="password" placeholder="Senha" value={password} onChange={e=>setPassword(e.target.value)} required minLength={8}/>{message && <p className="text-sm text-muted-foreground">{message}</p>}<Button className="w-full" disabled={loading}>{loading ? "Processando…" : mode === "login" ? "Entrar" : "Criar conta"}</Button></form><Button variant="ghost" className="mt-3 w-full" onClick={()=>supabase.auth.signInWithOAuth({provider:"google",options:{redirectTo:window.location.origin+"/onboarding"}})}>Continuar com Google</Button><div className="mt-5 text-center text-sm text-muted-foreground"><button className="underline" onClick={()=>setMode(mode === "login" ? "signup" : "login")}>{mode === "login" ? "Criar uma conta" : "Já tenho uma conta"}</button></div></div></div>;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function submit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setMessage("");
+
+    const result =
+      mode === "login"
+        ? await supabase.auth.signInWithPassword({
+            email,
+            password,
+          })
+        : await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: {
+                display_name: name,
+              },
+            },
+          });
+
+    setLoading(false);
+
+    if (result.error) {
+      setMessage(result.error.message);
+      return;
+    }
+
+    if (mode === "signup") {
+      if (result.data.session) {
+        await queryClient.invalidateQueries({
+          queryKey: ["current-user"],
+        });
+
+        await navigate({
+          to: "/onboarding",
+        });
+      } else {
+        setMessage("Conta criada. Verifique seu e-mail se a confirmação estiver habilitada.");
+      }
+
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: ["current-user"],
+    });
+
+    await navigate({
+      to: "/onboarding",
+    });
+  }
+
+  async function signInWithGoogle() {
+    setMessage("");
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: window.location.origin + "/onboarding",
+      },
+    });
+
+    if (error) {
+      setMessage(error.message);
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-background px-4 py-10">
+      <div className="mx-auto max-w-md surface-card p-7">
+        <div className="mb-7 text-center">
+          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-brand-gradient text-brand-foreground">
+            <LogIn className="size-6" />
+          </div>
+
+          <h1 className="text-2xl font-semibold">Entre na SECRET</h1>
+
+          <p className="mt-2 text-sm text-muted-foreground">
+            Sua comunidade. Seu conteúdo. Seu espaço.
+          </p>
+        </div>
+
+        <form onSubmit={submit} className="space-y-4">
+          {mode === "signup" && (
+            <Input
+              placeholder="Nome"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          )}
+
+          <Input
+            type="email"
+            placeholder="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <Input
+            type="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={8}
+          />
+
+          {message && <p className="text-sm text-muted-foreground">{message}</p>}
+
+          <Button className="w-full" disabled={loading}>
+            {loading ? "Processando…" : mode === "login" ? "Entrar" : "Criar conta"}
+          </Button>
+        </form>
+
+        <Button variant="ghost" className="mt-3 w-full" onClick={() => void signInWithGoogle()}>
+          Continuar com Google
+        </Button>
+
+        <div className="mt-5 text-center text-sm text-muted-foreground">
+          <button
+            className="underline"
+            onClick={() => setMode(mode === "login" ? "signup" : "login")}
+          >
+            {mode === "login" ? "Criar uma conta" : "Já tenho uma conta"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function OnboardingPage() { const { data } = useCurrentUser(); const navigate = useNavigate(); const [busy,setBusy]=useState(false); async function choose(role:"subscriber"|"creator") { if(!data?.user) return; setBusy(true); const { error: roleError }=await supabase.from("user_roles").insert({user_id:data.user.id,role}); if(roleError && !roleError.message.toLowerCase().includes("duplicate")){setBusy(false);return;} if(role === "creator"){await supabase.from("creator_profiles").upsert({user_id:data.user.id,is_published:false,commission_rate:0.15});} await supabase.from("profiles").update({onboarding_completed:true}).eq("id",data.user.id); setBusy(false); navigate({to: role === "creator" ? "/studio" : "/feed"}); } return <div className="min-h-screen bg-background px-4 py-12"><div className="mx-auto max-w-3xl"><h1 className="text-3xl font-semibold">Como você quer usar a SECRET?</h1><p className="mt-2 text-muted-foreground">Escolha seu espaço principal. Você pode criar uma comunidade ou participar das que já existem.</p><div className="mt-8 grid gap-5 md:grid-cols-2"><button className="surface-card p-6 text-left hover:border-primary/50" disabled={busy} onClick={()=>choose("subscriber")}><Users className="size-7 text-primary"/><h2 className="mt-4 text-xl font-semibold">Sou assinante</h2><p className="mt-2 text-sm text-muted-foreground">Explore criadores, acompanhe conteúdos e assine comunidades.</p></button><button className="surface-card p-6 text-left hover:border-primary/50" disabled={busy} onClick={()=>choose("creator")}><UserRound className="size-7 text-primary"/><h2 className="mt-4 text-xl font-semibold">Sou criador</h2><p className="mt-2 text-sm text-muted-foreground">Crie seu perfil, publique conteúdo e monetize sua comunidade.</p></button></div></div></div>; }
+function OnboardingPage() {
+  const { data, isLoading } = useCurrentUser();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
-function ExplorePage(){const {data,isLoading,error}=useCreators(); const [q,setQ]=useState(""); const list=useMemo(()=>data?.filter(c=>`${c.profile?.display_name??""} ${c.category??""} ${c.headline??""}`.toLowerCase().includes(q.toLowerCase()))??[],[data,q]); return <AppShell title="Explorar"><div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between"><div><h2 className="text-2xl font-semibold">Descubra criadores</h2><p className="text-sm text-muted-foreground">Encontre comunidades para fazer parte.</p></div><Input className="md:max-w-xs" placeholder="Buscar criadores" value={q} onChange={e=>setQ(e.target.value)}/></div>{isLoading?<LoadingBlock/>:error?<ErrorBlock/>:list.length===0?<EmptyBlock title="Nenhum criador encontrado" description="Ainda não há criadores publicados que correspondam à busca."/>:<div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{list.map(c=><CreatorCard key={c.user_id} creator={c}/>)}</div>}</AppShell>}
+  async function choose(role: "subscriber" | "creator") {
+    if (!data?.user) {
+      await navigate({
+        to: "/auth",
+        replace: true,
+      });
+      return;
+    }
 
-function FeedPage(){const {data:user}=useCurrentUser(); const q=useQuery({queryKey:["feed",user?.user.id],enabled:Boolean(user?.user.id),queryFn:async()=>{const [subs, follows]=await Promise.all([supabase.from("subscriptions").select("creator_id").eq("subscriber_id",user!.user.id).eq("status","active"),supabase.from("follows").select("creator_id").eq("follower_id",user!.user.id)]); const ids=Array.from(new Set([...(subs.data??[]).map((x:any)=>x.creator_id),...(follows.data??[]).map((x:any)=>x.creator_id)])); if(!ids.length)return []; const {data,error}=await supabase.from("posts").select("id,creator_id,title,body,visibility,is_published,like_count,comment_count,created_at,profiles:creator_id(username,display_name,avatar_url)").in("creator_id",ids).eq("is_published",true).eq("is_removed",false).order("created_at",{ascending:false}).limit(50); if(error)throw error; return data??[];}}); return <RoleGate allowed={["subscriber","creator"]}><AppShell title="Meu feed"><div className="mx-auto max-w-2xl space-y-5">{q.isLoading?<LoadingBlock/>:q.error?<ErrorBlock/>:q.data?.length===0?<EmptyBlock title="Seu feed está vazio" description="Siga ou assine criadores para começar a receber publicações." action={<Button asChild><Link to="/explore">Explorar criadores</Link></Button>}/>:q.data.map((post:any)=><PostCard key={post.id} post={post} />)}</div></AppShell></RoleGate>}
+    setBusy(true);
+    setError("");
 
-function PostCard({post}:{post:any}){const [liked,setLiked]=useState(false); const [busy,setBusy]=useState(false); async function toggleLike(){const {data:user}=await supabase.auth.getUser(); if(!user.user)return; setBusy(true); if(liked){await supabase.from("likes").delete().eq("post_id",post.id).eq("user_id",user.user.id);setLiked(false);}else{await supabase.from("likes").insert({post_id:post.id,user_id:user.user.id});setLiked(true);}setBusy(false);} const locked=post.visibility==="subscribers"; return <article className="surface-card overflow-hidden"><div className="flex items-center gap-3 p-4"><UserAvatar name={post.profiles?.display_name} path={post.profiles?.avatar_url} className="size-10"/><div className="min-w-0"><Link className="font-semibold hover:underline" to="/c/$username" params={{username:post.profiles?.username??""}}>{post.profiles?.display_name??"Criador"}</Link><p className="text-xs text-muted-foreground">{new Date(post.created_at).toLocaleString()}</p></div>{locked&&<Badge variant="secondary" className="ml-auto gap-1"><Lock className="size-3"/>Assinantes</Badge>}</div><div className="px-4 pb-4">{post.title&&<h2 className="text-lg font-semibold">{post.title}</h2>}{locked?<div className="mt-3 rounded-2xl border border-border bg-secondary/40 p-6 text-center"><Lock className="mx-auto size-6 text-primary"/><p className="mt-2 text-sm text-muted-foreground">Conteúdo exclusivo para assinantes.</p><Button asChild className="mt-4"><Link to="/c/$username" params={{username:post.profiles?.username??""}}>Ver comunidade</Link></Button></div>:post.body&&<p className="mt-2 whitespace-pre-wrap text-sm leading-6">{post.body}</p>}<div className="mt-4 flex items-center gap-2"><Button variant="ghost" size="sm" disabled={busy} onClick={toggleLike} className="gap-2"><Heart className={liked?"size-4 fill-current":"size-4"}/>{(post.like_count??0)+(liked?1:0)}</Button><span className="text-xs text-muted-foreground">{post.comment_count??0} comentários</span></div></div></article>}
+    const { error: roleError } = await supabase.from("user_roles").insert({
+      user_id: data.user.id,
+      role,
+    });
 
-function SubscriptionsPage(){const {data:user}=useCurrentUser(); const q=useQuery({queryKey:["subscriptions",user?.user.id],enabled:Boolean(user?.user.id),queryFn:async()=>{const {data,error}=await supabase.from("subscriptions").select("id,status,current_period_start,current_period_end,subscription_plans(name,price_cents,currency),profiles:creator_id(username,display_name)").eq("subscriber_id",user!.user.id).order("created_at",{ascending:false}); if(error)throw error; return data??[];}}); return <RoleGate allowed={["subscriber","creator"]}><AppShell title="Assinaturas"><h2 className="text-2xl font-semibold">Minhas assinaturas</h2><p className="mt-1 text-sm text-muted-foreground">Acompanhe suas comunidades e status de cobrança.</p><div className="mt-6 space-y-3">{q.isLoading?<LoadingBlock/>:q.error?<ErrorBlock/>:q.data?.length===0?<EmptyBlock title="Você ainda não assinou nenhum criador" description="Explore criadores e escolha uma comunidade para começar." action={<Button asChild><Link to="/explore">Explorar</Link></Button>}/>:q.data.map((s:any)=><div key={s.id} className="surface-card flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"><div><p className="font-semibold">{s.profiles?.display_name??"Criador"}</p><p className="text-sm text-muted-foreground">{s.subscription_plans?.name??"Plano"} · {s.subscription_plans?.currency??"USD"}</p></div><Badge>{s.status}</Badge></div>)}</div></AppShell></RoleGate>}
+    if (roleError && !roleError.message.toLowerCase().includes("duplicate")) {
+      setBusy(false);
+      setError(roleError.message);
+      return;
+    }
 
-function MessagesPage(){const {data:user}=useCurrentUser(); const q=useQuery({queryKey:["conversations",user?.user.id],enabled:Boolean(user?.user.id),queryFn:async()=>{const {data,error}=await supabase.from("conversations").select("id,creator_id,subscriber_id,last_message_at,profiles:creator_id(username,display_name,avatar_url)").or(`creator_id.eq.${user!.user.id},subscriber_id.eq.${user!.user.id}`).order("last_message_at",{ascending:false});if(error)throw error;return data??[];}}); return <RoleGate allowed={["subscriber","creator"]}><AppShell title="Mensagens"><div className="mx-auto max-w-2xl">{q.isLoading?<LoadingBlock/>:q.error?<ErrorBlock/>:q.data?.length===0?<EmptyBlock title="Nenhuma conversa ainda" description="Quando você iniciar uma conversa com um criador, ela aparecerá aqui." icon={<MessageCircle className="size-5"/>}/>:<div className="space-y-3">{q.data.map((c:any)=><div key={c.id} className="surface-card flex items-center gap-3 p-4"><UserAvatar name={c.profiles?.display_name} path={c.profiles?.avatar_url} className="size-11"/><div className="min-w-0 flex-1"><p className="font-semibold">{c.profiles?.display_name??"Conversa"}</p><p className="text-xs text-muted-foreground">{c.last_message_at?new Date(c.last_message_at).toLocaleString():"Nova conversa"}</p></div><Button variant="outline">Abrir</Button></div>)}</div>}</div></AppShell></RoleGate>}
-function NotificationsPage(){const {data}=useCurrentUser(); const q=useQuery({queryKey:["notifications",data?.user.id],enabled:Boolean(data?.user.id),queryFn:async()=>{const {data,error}=await supabase.from("notifications").select("*").eq("user_id",data!.user.id).order("created_at",{ascending:false});if(error)throw error;return data??[];}}); return <RoleGate allowed={["subscriber","creator","admin","super_admin"]}><AppShell title="Notificações"><div className="space-y-3">{q.data?.length===0?<EmptyBlock title="Tudo limpo" description="Você não tem novas notificações." icon={<Bell className="size-5"/>}/>:q.data?.map((n:any)=><div key={n.id} className="surface-card p-4"><p className="font-medium">{n.title}</p><p className="mt-1 text-sm text-muted-foreground">{n.body}</p></div>)}</div></AppShell></RoleGate>}
-function AccountPage(){return <RoleGate allowed={["subscriber","creator"]}><AppShell title="Minha conta"><AccountForm/></AppShell></RoleGate>}
-function AccountForm(){const {data}=useCurrentUser(); const [name,setName]=useState(""); const [bio,setBio]=useState(""); const [saved,setSaved]=useState(false); const uid=data?.user.id; useMemo(()=>{setName(data?.profile?.display_name??"");setBio(data?.profile?.bio??"");},[data?.profile]); async function save(){if(!uid)return;const {error}=await supabase.from("profiles").update({display_name:name,bio}).eq("id",uid);if(!error)setSaved(true);} return <div className="max-w-2xl space-y-4"><Input value={name} onChange={e=>setName(e.target.value)} placeholder="Nome"/><Textarea value={bio} onChange={e=>setBio(e.target.value)} placeholder="Bio"/><Button onClick={save}>Salvar alterações</Button>{saved&&<p className="text-sm text-muted-foreground">Perfil atualizado.</p>}</div>}
+    if (role === "creator") {
+      const { error: creatorError } = await supabase.from("creator_profiles").upsert({
+        user_id: data.user.id,
+        is_published: false,
+        commission_rate: 0.15,
+      });
 
-function SectionPage(){const {section}=Route.useParams(); if(section==="auth")return <AuthPage/>; if(section==="onboarding")return <RoleGate allowed={["subscriber","creator","admin","super_admin"]}><OnboardingPage/></RoleGate>; if(section==="explore")return <ExplorePage/>; if(section==="feed")return <FeedPage/>; if(section==="subscriptions")return <SubscriptionsPage/>; if(section==="messages")return <MessagesPage/>; if(section==="notifications")return <NotificationsPage/>; if(section==="account")return <AccountPage/>; return <AppShell title="SECRET"><EmptyBlock title="Página em construção" description="Esta área será disponibilizada na próxima etapa do produto."/></AppShell>}
+      if (creatorError) {
+        setBusy(false);
+        setError(creatorError.message);
+        return;
+      }
+    }
+
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
+        onboarding_completed: true,
+      })
+      .eq("id", data.user.id);
+
+    if (profileError) {
+      setBusy(false);
+      setError(profileError.message);
+      return;
+    }
+
+    await queryClient.invalidateQueries({
+      queryKey: ["current-user"],
+    });
+
+    await queryClient.refetchQueries({
+      queryKey: ["current-user"],
+    });
+
+    setBusy(false);
+
+    await navigate({
+      to: role === "creator" ? "/studio" : "/feed",
+    });
+  }
+
+  if (isLoading) {
+    return <LoadingBlock label="Carregando seu perfil…" />;
+  }
+
+  if (!data?.user) {
+    return <LoadingBlock label="Redirecionando para o login…" />;
+  }
+
+  return (
+    <div className="min-h-screen bg-background px-4 py-12">
+      <div className="mx-auto max-w-3xl">
+        <h1 className="text-3xl font-semibold">Como você quer usar a SECRET?</h1>
+
+        <p className="mt-2 text-muted-foreground">
+          Escolha seu espaço principal. Você pode criar uma comunidade ou participar das que já
+          existem.
+        </p>
+
+        {error && (
+          <div className="mt-5 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          <button
+            type="button"
+            className="surface-card p-6 text-left hover:border-primary/50"
+            disabled={busy}
+            onClick={() => void choose("subscriber")}
+          >
+            <Users className="size-7 text-primary" />
+
+            <h2 className="mt-4 text-xl font-semibold">Sou assinante</h2>
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              Explore criadores, acompanhe conteúdos e assine comunidades.
+            </p>
+          </button>
+
+          <button
+            type="button"
+            className="surface-card p-6 text-left hover:border-primary/50"
+            disabled={busy}
+            onClick={() => void choose("creator")}
+          >
+            <UserRound className="size-7 text-primary" />
+
+            <h2 className="mt-4 text-xl font-semibold">Sou criador</h2>
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              Crie seu perfil, publique conteúdo e monetize sua comunidade.
+            </p>
+          </button>
+        </div>
+
+        {busy && (
+          <p className="mt-5 text-center text-sm text-muted-foreground">Configurando seu espaço…</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ExplorePage() {
+  const { data, isLoading, error } = useCreators();
+
+  const [q, setQ] = useState("");
+
+  const list = useMemo(
+    () =>
+      data?.filter((creator) =>
+        `${creator.profile?.display_name ?? ""} ${creator.category ?? ""} ${creator.headline ?? ""}`
+          .toLowerCase()
+          .includes(q.toLowerCase()),
+      ) ?? [],
+    [data, q],
+  );
+
+  return (
+    <AppShell title="Explorar">
+      <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div>
+          <h2 className="text-2xl font-semibold">Descubra criadores</h2>
+
+          <p className="text-sm text-muted-foreground">Encontre comunidades para fazer parte.</p>
+        </div>
+
+        <Input
+          className="md:max-w-xs"
+          placeholder="Buscar criadores"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+        />
+      </div>
+
+      {isLoading ? (
+        <LoadingBlock />
+      ) : error ? (
+        <ErrorBlock />
+      ) : list.length === 0 ? (
+        <EmptyBlock
+          title="Nenhum criador encontrado"
+          description="Ainda não há criadores publicados que correspondam à busca."
+        />
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {list.map((creator) => (
+            <CreatorCard key={creator.user_id} creator={creator} />
+          ))}
+        </div>
+      )}
+    </AppShell>
+  );
+}
+
+function FeedPage() {
+  const { data: user } = useCurrentUser();
+
+  const q = useQuery({
+    queryKey: ["feed", user?.user.id],
+    enabled: Boolean(user?.user.id),
+    queryFn: async (): Promise<FeedPost[]> => {
+      const [subs, follows] = await Promise.all([
+        supabase
+          .from("subscriptions")
+          .select("creator_id")
+          .eq("subscriber_id", user!.user.id)
+          .eq("status", "active"),
+
+        supabase.from("follows").select("creator_id").eq("follower_id", user!.user.id),
+      ]);
+
+      const subscriptionIds = (subs.data ?? []).map((row) => row.creator_id);
+
+      const followIds = (follows.data ?? []).map((row) => row.creator_id);
+
+      const ids = Array.from(new Set([...subscriptionIds, ...followIds]));
+
+      if (!ids.length) return [];
+
+      const { data, error } = await supabase
+        .from("posts")
+        .select(
+          "id,creator_id,title,body,visibility,is_published,like_count,comment_count,created_at,profiles:creator_id(username,display_name,avatar_url)",
+        )
+        .in("creator_id", ids)
+        .eq("is_published", true)
+        .eq("is_removed", false)
+        .order("created_at", {
+          ascending: false,
+        })
+        .limit(50);
+
+      if (error) throw error;
+
+      return (data ?? []) as FeedPost[];
+    },
+  });
+
+  return (
+    <RoleGate allowed={["subscriber", "creator"]}>
+      <AppShell title="Meu feed">
+        <div className="mx-auto max-w-2xl space-y-5">
+          {q.isLoading ? (
+            <LoadingBlock />
+          ) : q.error ? (
+            <ErrorBlock />
+          ) : q.data?.length === 0 ? (
+            <EmptyBlock
+              title="Seu feed está vazio"
+              description="Siga ou assine criadores para começar a receber publicações."
+              action={
+                <Button asChild>
+                  <Link to="/explore">Explorar criadores</Link>
+                </Button>
+              }
+            />
+          ) : (
+            q.data.map((post) => <PostCard key={post.id} post={post} />)
+          )}
+        </div>
+      </AppShell>
+    </RoleGate>
+  );
+}
+
+function PostCard({ post }: { post: FeedPost }) {
+  const [liked, setLiked] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  async function toggleLike() {
+    const { data: user } = await supabase.auth.getUser();
+
+    if (!user.user) return;
+
+    setBusy(true);
+
+    try {
+      if (liked) {
+        await supabase.from("likes").delete().eq("post_id", post.id).eq("user_id", user.user.id);
+
+        setLiked(false);
+      } else {
+        await supabase.from("likes").insert({
+          post_id: post.id,
+          user_id: user.user.id,
+        });
+
+        setLiked(true);
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const locked = post.visibility === "subscribers";
+
+  return (
+    <article className="surface-card overflow-hidden">
+      <div className="flex items-center gap-3 p-4">
+        <UserAvatar
+          name={post.profiles?.display_name}
+          path={post.profiles?.avatar_url}
+          className="size-10"
+        />
+
+        <div className="min-w-0">
+          <Link
+            className="font-semibold hover:underline"
+            to="/c/$username"
+            params={{
+              username: post.profiles?.username ?? "",
+            }}
+          >
+            {post.profiles?.display_name ?? "Criador"}
+          </Link>
+
+          <p className="text-xs text-muted-foreground">
+            {new Date(post.created_at).toLocaleString()}
+          </p>
+        </div>
+
+        {locked && (
+          <Badge variant="secondary" className="ml-auto gap-1">
+            <Lock className="size-3" />
+            Assinantes
+          </Badge>
+        )}
+      </div>
+
+      <div className="px-4 pb-4">
+        {post.title && <h2 className="text-lg font-semibold">{post.title}</h2>}
+
+        {locked ? (
+          <div className="mt-3 rounded-2xl border border-border bg-secondary/40 p-6 text-center">
+            <Lock className="mx-auto size-6 text-primary" />
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              Conteúdo exclusivo para assinantes.
+            </p>
+
+            <Button asChild className="mt-4">
+              <Link
+                to="/c/$username"
+                params={{
+                  username: post.profiles?.username ?? "",
+                }}
+              >
+                Ver comunidade
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          post.body && <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{post.body}</p>
+        )}
+
+        <div className="mt-4 flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled={busy}
+            onClick={() => void toggleLike()}
+            className="gap-2"
+          >
+            <Heart className={liked ? "size-4 fill-current" : "size-4"} />
+
+            {(post.like_count ?? 0) + (liked ? 1 : 0)}
+          </Button>
+
+          <span className="text-xs text-muted-foreground">
+            {post.comment_count ?? 0} comentários
+          </span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function SubscriptionsPage() {
+  const { data: user } = useCurrentUser();
+
+  const q = useQuery({
+    queryKey: ["subscriptions", user?.user.id],
+    enabled: Boolean(user?.user.id),
+    queryFn: async (): Promise<SubscriptionRow[]> => {
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select(
+          "id,status,current_period_start,current_period_end,subscription_plans(name,price_cents,currency),profiles:creator_id(username,display_name)",
+        )
+        .eq("subscriber_id", user!.user.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) throw error;
+
+      return (data ?? []) as SubscriptionRow[];
+    },
+  });
+
+  return (
+    <RoleGate allowed={["subscriber", "creator"]}>
+      <AppShell title="Assinaturas">
+        <h2 className="text-2xl font-semibold">Minhas assinaturas</h2>
+
+        <p className="mt-1 text-sm text-muted-foreground">
+          Acompanhe suas comunidades e status de cobrança.
+        </p>
+
+        <div className="mt-6 space-y-3">
+          {q.isLoading ? (
+            <LoadingBlock />
+          ) : q.error ? (
+            <ErrorBlock />
+          ) : q.data?.length === 0 ? (
+            <EmptyBlock
+              title="Você ainda não assinou nenhum criador"
+              description="Explore criadores e escolha uma comunidade para começar."
+              action={
+                <Button asChild>
+                  <Link to="/explore">Explorar</Link>
+                </Button>
+              }
+            />
+          ) : (
+            q.data.map((subscription) => (
+              <div
+                key={subscription.id}
+                className="surface-card flex flex-col gap-3 p-5 md:flex-row md:items-center md:justify-between"
+              >
+                <div>
+                  <p className="font-semibold">
+                    {subscription.profiles?.display_name ?? "Criador"}
+                  </p>
+
+                  <p className="text-sm text-muted-foreground">
+                    {subscription.subscription_plans?.name ?? "Plano"} ·{" "}
+                    {subscription.subscription_plans?.currency ?? "USD"}
+                  </p>
+                </div>
+
+                <Badge>{subscription.status}</Badge>
+              </div>
+            ))
+          )}
+        </div>
+      </AppShell>
+    </RoleGate>
+  );
+}
+
+function MessagesPage() {
+  const { data: user } = useCurrentUser();
+
+  const q = useQuery({
+    queryKey: ["conversations", user?.user.id],
+    enabled: Boolean(user?.user.id),
+    queryFn: async (): Promise<ConversationRow[]> => {
+      const { data, error } = await supabase
+        .from("conversations")
+        .select(
+          "id,creator_id,subscriber_id,last_message_at,profiles:creator_id(username,display_name,avatar_url)",
+        )
+        .or(`creator_id.eq.${user!.user.id},subscriber_id.eq.${user!.user.id}`)
+        .order("last_message_at", {
+          ascending: false,
+        });
+
+      if (error) throw error;
+
+      return (data ?? []) as ConversationRow[];
+    },
+  });
+
+  return (
+    <RoleGate allowed={["subscriber", "creator"]}>
+      <AppShell title="Mensagens">
+        <div className="mx-auto max-w-2xl">
+          {q.isLoading ? (
+            <LoadingBlock />
+          ) : q.error ? (
+            <ErrorBlock />
+          ) : q.data?.length === 0 ? (
+            <EmptyBlock
+              title="Nenhuma conversa ainda"
+              description="Quando você iniciar uma conversa com um criador, ela aparecerá aqui."
+              icon={<MessageCircle className="size-5" />}
+            />
+          ) : (
+            <div className="space-y-3">
+              {q.data.map((conversation) => (
+                <div key={conversation.id} className="surface-card flex items-center gap-3 p-4">
+                  <UserAvatar
+                    name={conversation.profiles?.display_name}
+                    path={conversation.profiles?.avatar_url}
+                    className="size-11"
+                  />
+
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">
+                      {conversation.profiles?.display_name ?? "Conversa"}
+                    </p>
+
+                    <p className="text-xs text-muted-foreground">
+                      {conversation.last_message_at
+                        ? new Date(conversation.last_message_at).toLocaleString()
+                        : "Nova conversa"}
+                    </p>
+                  </div>
+
+                  <Button variant="outline">Abrir</Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </AppShell>
+    </RoleGate>
+  );
+}
+
+function NotificationsPage() {
+  const { data } = useCurrentUser();
+
+  const q = useQuery({
+    queryKey: ["notifications", data?.user.id],
+    enabled: Boolean(data?.user.id),
+    queryFn: async (): Promise<NotificationRow[]> => {
+      const { data, error } = await supabase
+        .from("notifications")
+        .select("id,type,title,body,link,is_read,created_at")
+        .eq("user_id", data!.user.id)
+        .order("created_at", {
+          ascending: false,
+        });
+
+      if (error) throw error;
+
+      return (data ?? []) as NotificationRow[];
+    },
+  });
+
+  return (
+    <RoleGate allowed={["subscriber", "creator", "admin", "super_admin"]}>
+      <AppShell title="Notificações">
+        <div className="space-y-3">
+          {q.isLoading ? (
+            <LoadingBlock />
+          ) : q.error ? (
+            <ErrorBlock />
+          ) : q.data?.length === 0 ? (
+            <EmptyBlock
+              title="Tudo limpo"
+              description="Você não tem novas notificações."
+              icon={<Bell className="size-5" />}
+            />
+          ) : (
+            q.data?.map((notification) => (
+              <div key={notification.id} className="surface-card p-4">
+                <p className="font-medium">{notification.title}</p>
+
+                <p className="mt-1 text-sm text-muted-foreground">{notification.body}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </AppShell>
+    </RoleGate>
+  );
+}
+
+function AccountPage() {
+  return (
+    <RoleGate allowed={["subscriber", "creator"]}>
+      <AppShell title="Minha conta">
+        <AccountForm />
+      </AppShell>
+    </RoleGate>
+  );
+}
+
+function AccountForm() {
+  const { data } = useCurrentUser();
+  const [name, setName] = useState("");
+  const [bio, setBio] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const uid = data?.user.id;
+
+  useEffect(() => {
+    setName(data?.profile?.display_name ?? "");
+    setBio(data?.profile?.bio ?? "");
+  }, [data?.profile]);
+
+  async function save() {
+    if (!uid) return;
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        display_name: name,
+        bio,
+      })
+      .eq("id", uid);
+
+    if (!error) {
+      setSaved(true);
+    }
+  }
+
+  return (
+    <div className="max-w-2xl space-y-4">
+      <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nome" />
+
+      <Textarea value={bio} onChange={(e) => setBio(e.target.value)} placeholder="Bio" />
+
+      <Button onClick={() => void save()}>Salvar alterações</Button>
+
+      {saved && <p className="text-sm text-muted-foreground">Perfil atualizado.</p>}
+    </div>
+  );
+}
+
+function SectionPage() {
+  const { section } = Route.useParams();
+
+  if (section === "auth") {
+    return <AuthPage />;
+  }
+
+  if (section === "onboarding") {
+    return <OnboardingPage />;
+  }
+
+  if (section === "explore") {
+    return <ExplorePage />;
+  }
+
+  if (section === "feed") {
+    return <FeedPage />;
+  }
+
+  if (section === "subscriptions") {
+    return <SubscriptionsPage />;
+  }
+
+  if (section === "messages") {
+    return <MessagesPage />;
+  }
+
+  if (section === "notifications") {
+    return <NotificationsPage />;
+  }
+
+  if (section === "account") {
+    return <AccountPage />;
+  }
+
+  return (
+    <AppShell title="SECRET">
+      <EmptyBlock
+        title="Página em construção"
+        description="Esta área será disponibilizada na próxima etapa do produto."
+      />
+    </AppShell>
+  );
+}
