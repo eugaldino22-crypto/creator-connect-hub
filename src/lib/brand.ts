@@ -1,29 +1,29 @@
 export const BRAND = {
-  name: "Corella",
-  tagline: "A plataforma de assinaturas para criadores independentes",
+  name: "SECRET",
+  tagline: "A global subscription platform for creators",
   description:
-    "Corella é a plataforma onde educadores, músicos, artistas e especialistas publicam conteúdo, criam planos de assinatura e constroem uma comunidade paga com identidade própria.",
+    "SECRET helps creators build communities, publish content, offer subscriptions and grow recurring revenue worldwide.",
 } as const;
 
 export const CREATOR_CATEGORIES = [
-  "Educação",
-  "Música",
-  "Arte e Ilustração",
-  "Fotografia",
-  "Fitness e Bem-estar",
-  "Negócios",
-  "Tecnologia",
-  "Culinária",
+  "Education",
+  "Music",
+  "Art & Illustration",
+  "Photography",
+  "Fitness & Wellness",
+  "Business",
+  "Technology",
+  "Food",
   "Podcast",
-  "Outros",
+  "Other",
 ] as const;
 
-export function formatCents(cents: number, currency = "BRL") {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency }).format((cents ?? 0) / 100);
+export function formatCents(cents: number, currency = "USD", locale = "en-US") {
+  return new Intl.NumberFormat(locale, { style: "currency", currency }).format((cents ?? 0) / 100);
 }
 
 export function initials(name?: string | null) {
-  if (!name) return "CO";
+  if (!name) return "SE";
   return name
     .trim()
     .split(/\s+/)
