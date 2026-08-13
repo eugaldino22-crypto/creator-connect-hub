@@ -16,7 +16,6 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser, hasRole } from "@/hooks/use-session";
 import { UserAvatar } from "@/components/common/UserAvatar";
-import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 import { BRAND } from "@/lib/brand";
 import { useLocale, t } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
@@ -103,7 +102,6 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           </div>
           <h1 className="hidden text-lg font-semibold lg:block">{title}</h1>
           <div className="flex items-center gap-2">
-            <LanguageSwitcher compact />
             <Button asChild variant="ghost" size="icon" aria-label={t("notifications", locale)}>
               <Link to="/notifications">
                 <Bell className="size-5" />
