@@ -70,7 +70,6 @@ function Index() {
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <LanguageSwitcher compact />
           <Link
             to="/auth"
             className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.06] sm:px-5"
