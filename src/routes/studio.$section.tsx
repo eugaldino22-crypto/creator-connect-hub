@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { RoleGate } from "@/components/auth/RoleGate";
 import { AppShell } from "@/components/layout/AppShell";
 import { EmptyBlock, LoadingBlock } from "@/components/common/StateBlocks";
