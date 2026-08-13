@@ -17,9 +17,7 @@ import {
 } from "lucide-react";
 import { LanguageSwitcher } from "@/components/common/LanguageSwitcher";
 
-export const Route = createFileRoute("/")({
-  component: Index,
-});
+export const Route = createFileRoute("/")({ component: Index });
 
 function SecretMark() {
   return (
@@ -54,11 +52,7 @@ function Index() {
           <a href="#experiencias" className="hidden rounded-full px-3 py-2 text-sm font-medium text-muted-foreground transition hover:text-foreground md:inline-flex">
             Experiências
           </a>
-          <LanguageSwitcher compact />
-          <Link
-            to="/auth"
-            className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.08] sm:px-5"
-          >
+          <Link to="/auth" className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.08] sm:px-5">
             Entrar
           </Link>
         </div>
@@ -81,17 +75,11 @@ function Index() {
           </p>
 
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-            <Link
-              to="/auth"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground shadow-[0_16px_45px_-18px_rgba(184,76,255,0.75)] transition hover:-translate-y-0.5"
-            >
+            <Link to="/auth" className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground shadow-[0_16px_45px_-18px_rgba(184,76,255,0.75)] transition hover:-translate-y-0.5">
               Quero ser criador
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              to="/auth"
-              className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold transition hover:bg-white/[0.08]"
-            >
+            <Link to="/auth" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-6 py-3.5 text-sm font-semibold transition hover:bg-white/[0.08]">
               Explorar a SECRET
             </Link>
           </div>
@@ -204,10 +192,7 @@ function Index() {
             <CheckRow text="Receba propostas e negocie diretamente" />
           </div>
 
-          <Link
-            to="/auth"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5"
-          >
+          <Link to="/auth" className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5">
             Criar minha comunidade
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -261,26 +246,25 @@ function Index() {
             Crie seu espaço na SECRET ou descubra uma comunidade da qual você realmente queira fazer parte.
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              to="/auth"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5"
-            >
+            <Link to="/auth" className="inline-flex items-center justify-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5">
               Começar agora
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              to="/auth"
-              className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold transition hover:bg-white/[0.08]"
-            >
+            <Link to="/auth" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-7 py-3.5 text-sm font-semibold transition hover:bg-white/[0.08]">
               Entrar na SECRET
             </Link>
           </div>
         </div>
       </section>
 
-      <footer className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-3 border-t border-white/5 px-4 py-8 text-xs text-muted-foreground sm:px-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-        <div className="tracking-[0.18em]">SECRET</div>
-        <div>Sua comunidade. Seu conteúdo. Seu espaço.</div>
+      <footer className="relative z-10 mx-auto flex w-full max-w-7xl flex-col gap-4 border-t border-white/5 px-4 py-8 text-xs text-muted-foreground sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="tracking-[0.18em]">SECRET</div>
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-end">
+            <div>Sua comunidade. Seu conteúdo. Seu espaço.</div>
+            <LanguageSwitcher compact />
+          </div>
+        </div>
       </footer>
     </main>
   );
