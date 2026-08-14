@@ -464,5 +464,5 @@ export function applyLocaleToDocument(locale = getLocale()) {
   const info = getLocaleInfo(locale);
   document.documentElement.lang = info.code;
   document.documentElement.dir = info.dir;
-  document.documentElement.dataset.locale = info.code;
+  document.documentElement.dataset["locale"] = info.code;
 }
