@@ -21,7 +21,7 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
   const authorized = hasAnyRole(data?.roles, allowed) && !roleConflict && !creatorConflict;
 
   useEffect(() => {
-    if (!isLoading && !data?.user) navigate({ to: "/auth", replace: true });
+    if (!isLoading && !data?.user) navigate({ to: "/$section", params: { section: "auth" }, replace: true });
   }, [data?.user, isLoading, navigate]);
 
   useEffect(() => {

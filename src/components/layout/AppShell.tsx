@@ -81,7 +81,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
     await queryClient.cancelQueries();
     queryClient.clear();
     await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    navigate({ to: "/$section", params: { section: "auth" }, replace: true });
   }
 
   return (
@@ -134,7 +134,8 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                 Configure promoções e ofertas exclusivas para sua comunidade.
               </p>
               <Link
-                to="/studio/new"
+                to="/studio/$section"
+                params={{ section: "new" }}
                 className="mt-3 flex h-8 items-center justify-center rounded-lg bg-brand/15 text-[11px] font-semibold text-brand transition hover:bg-brand/20"
               >
                 Criar publicação
@@ -157,7 +158,8 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                 </div>
               </div>
               <Link
-                to="/studio/finance"
+                to="/studio/$section"
+                params={{ section: "finance" }}
                 className="mt-2.5 flex h-8 items-center justify-center rounded-lg bg-brand/[0.12] text-[11px] font-semibold text-brand hover:bg-brand/[0.18]"
               >
                 Gerenciar plano

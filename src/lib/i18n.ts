@@ -89,8 +89,12 @@ function normalizeLocale(value?: string | null): Locale {
   if (!value) return FALLBACK_LOCALE;
   const exact = SUPPORTED_LOCALES.find((locale) => locale.toLowerCase() === value.toLowerCase());
   if (exact) return exact;
-  const language = value.split("-")[0].toLowerCase();
-  return SUPPORTED_LOCALES.find((locale) => locale.split("-")[0].toLowerCase() === language) ?? FALLBACK_LOCALE;
+  const language = (value.split("-")[0] ?? "").toLowerCase();
+  return (
+    SUPPORTED_LOCALES.find(
+      (locale) => (locale.split("-")[0] ?? "").toLowerCase() === language,
+    ) ?? FALLBACK_LOCALE
+  );
 }
 
 function detectInitialLocale(): Locale {
@@ -413,8 +417,8 @@ const dictionary = {
 
 type TranslationKey = keyof (typeof dictionary)["en-US"];
 
-export function getLocaleInfo(locale: Locale = getLocale()) {
-  return LOCALES.find((item) => item.code === locale) ?? LOCALES[0];
+export function getLocaleInfo(locale: Locale = getLocale()): LocaleInfo {
+  return (LOCALES.find((item) => item.code === locale) ?? LOCALES[0]) as LocaleInfo;
 }
 
 export function getLocale(): Locale {
@@ -427,14 +431,14 @@ export function setLocale(locale: Locale) {
   listeners.forEach((listener) => listener());
 }
 
-export function useLocale() {
+export function useLocale(): Locale {
   return useSyncExternalStore(
     (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
     () => currentLocale,
-    () => "pt-BR",
+    () => "pt-BR" as Locale,
   );
 }
 
@@ -460,5 +464,5 @@ export function applyLocaleToDocument(locale = getLocale()) {
   const info = getLocaleInfo(locale);
   document.documentElement.lang = info.code;
   document.documentElement.dir = info.dir;
-  document.documentElement.dataset.locale = info.code;
+  document.documentElement.dataset["locale"] = info.code;
 }
