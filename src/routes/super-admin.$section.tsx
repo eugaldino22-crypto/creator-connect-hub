@@ -4,6 +4,7 @@ import { AppShell } from "@/components/layout/AppShell";
 import { SuperAdminOverview } from "@/components/admin/SuperAdminOverview";
 import { SuperAdminSettingsPanel } from "@/components/admin/SuperAdminSettingsPanel";
 import { SuperAdminAuditPanel } from "@/components/admin/SuperAdminAuditPanel";
+import { SuperAdminRolesPanel } from "@/components/admin/SuperAdminRolesPanel";
 
 export const Route = createFileRoute("/super-admin/$section")({ component: SuperAdminSection });
 function SuperAdminSection() {
@@ -15,6 +16,8 @@ function SuperAdminSection() {
           <SuperAdminSettingsPanel />
         ) : section === "audit" ? (
           <SuperAdminAuditPanel />
+        ) : section === "roles" ? (
+          <SuperAdminRolesPanel />
         ) : (
           <SuperAdminOverview />
         )}
