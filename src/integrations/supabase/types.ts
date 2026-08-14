@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          actor_user_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          actor_user_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
       comments: {
         Row: {
           body: string
@@ -290,6 +320,27 @@ export type Database = {
           notes?: string | null
           status?: Database["public"]["Enums"]["payout_status"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -650,9 +701,10 @@ export type Database = {
         Args: { _conversation: string; _user: string }
         Returns: boolean
       }
+      is_super_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      app_role: "subscriber" | "creator" | "admin"
+      app_role: "subscriber" | "creator" | "admin" | "super_admin"
       payout_status: "requested" | "processing" | "paid" | "rejected"
       post_visibility: "public" | "subscribers"
       report_status: "open" | "reviewing" | "resolved" | "dismissed"
@@ -785,7 +837,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["subscriber", "creator", "admin"],
+      app_role: ["subscriber", "creator", "admin", "super_admin"],
       payout_status: ["requested", "processing", "paid", "rejected"],
       post_visibility: ["public", "subscribers"],
       report_status: ["open", "reviewing", "resolved", "dismissed"],
