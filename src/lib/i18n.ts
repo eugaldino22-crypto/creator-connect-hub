@@ -417,8 +417,8 @@ const dictionary = {
 
 type TranslationKey = keyof (typeof dictionary)["en-US"];
 
-export function getLocaleInfo(locale: Locale = getLocale()) {
-  return LOCALES.find((item) => item.code === locale) ?? LOCALES[0];
+export function getLocaleInfo(locale: Locale = getLocale()): LocaleInfo {
+  return (LOCALES.find((item) => item.code === locale) ?? LOCALES[0]) as LocaleInfo;
 }
 
 export function getLocale(): Locale {
@@ -431,14 +431,14 @@ export function setLocale(locale: Locale) {
   listeners.forEach((listener) => listener());
 }
 
-export function useLocale() {
+export function useLocale(): Locale {
   return useSyncExternalStore(
     (listener) => {
       listeners.add(listener);
       return () => listeners.delete(listener);
     },
     () => currentLocale,
-    () => "pt-BR",
+    () => "pt-BR" as Locale,
   );
 }
 
