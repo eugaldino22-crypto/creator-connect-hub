@@ -203,7 +203,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       </aside>
 
       <div className="relative lg:pl-[236px]">
-        <header className="sticky top-0 z-20 border-b border-white/[0.07] bg-[#07080d]/80 backdrop-blur-2xl">
+        <header className="fixed top-0 right-0 z-40 lg:left-[236px] border-b border-white/[0.07] bg-[#07080d]/80 backdrop-blur-2xl">
           <div className="flex items-center justify-between gap-3 px-4 py-3.5 lg:px-7">
             <div className="flex min-w-0 items-center gap-3 lg:hidden">
               <img
@@ -243,7 +243,7 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1500px] px-4 pb-28 pt-6 lg:px-7 lg:pb-12 lg:pt-7">
+        <main className="mx-auto w-full max-w-[1500px] px-4 pb-28 pt-24 lg:px-7 lg:pb-12 lg:pt-24">
           {children}
         </main>
       </div>
