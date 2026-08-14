@@ -89,8 +89,12 @@ function normalizeLocale(value?: string | null): Locale {
   if (!value) return FALLBACK_LOCALE;
   const exact = SUPPORTED_LOCALES.find((locale) => locale.toLowerCase() === value.toLowerCase());
   if (exact) return exact;
-  const language = value.split("-")[0].toLowerCase();
-  return SUPPORTED_LOCALES.find((locale) => locale.split("-")[0].toLowerCase() === language) ?? FALLBACK_LOCALE;
+  const language = (value.split("-")[0] ?? "").toLowerCase();
+  return (
+    SUPPORTED_LOCALES.find(
+      (locale) => (locale.split("-")[0] ?? "").toLowerCase() === language,
+    ) ?? FALLBACK_LOCALE
+  );
 }
 
 function detectInitialLocale(): Locale {
