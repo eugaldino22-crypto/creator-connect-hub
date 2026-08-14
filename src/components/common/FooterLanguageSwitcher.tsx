@@ -10,7 +10,7 @@ function flagForLocale(code: string) {
 
 export function FooterLanguageSwitcher() {
   const locale = useLocale();
-  const current = LOCALES.find((item) => item.code === locale) ?? LOCALES[0];
+  const current = (LOCALES.find((item) => item.code === locale) ?? LOCALES[0]) as LocaleInfo;
 
   return (
     <Select value={locale} onValueChange={(value) => setLocale(value as Locale)}>
