@@ -34,10 +34,20 @@ export function useCurrentUser() {
       const user = data.user;
       if (!user) return null;
       const [{ data: profile }, { data: roles }] = await Promise.all([
-        supabase.from("profiles").select("id, username, display_name, bio, avatar_url, cover_url, onboarding_completed, is_suspended").eq("id", user.id).maybeSingle(),
+        supabase
+          .from("profiles")
+          .select(
+            "id, username, display_name, bio, avatar_url, cover_url, onboarding_completed, is_suspended",
+          )
+          .eq("id", user.id)
+          .maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", user.id),
       ]);
-      return { user, profile: (profile ?? null) as Profile | null, roles: (roles ?? []).map((r) => r.role as AppRole) };
+      return {
+        user,
+        profile: (profile ?? null) as Profile | null,
+        roles: (roles ?? []).map((r) => r.role as AppRole),
+      };
     },
     staleTime: 15_000,
   });

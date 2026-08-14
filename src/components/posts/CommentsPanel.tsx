@@ -38,7 +38,7 @@ export function CommentsPanel({ postId }: { postId: string }) {
 
       if (error) throw error;
 
-      return (data ?? []) as CommentRow[];
+      return (data ?? []) as unknown as CommentRow[];
     },
   });
 

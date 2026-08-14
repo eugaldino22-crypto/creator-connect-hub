@@ -114,13 +114,21 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
                   to={item.to}
                   className={cn(
                     "group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-sidebar-foreground/65 transition-all duration-200 hover:bg-white/[0.035] hover:text-sidebar-foreground",
-                    active && "bg-gradient-to-r from-brand/[0.17] to-brand/[0.035] text-white shadow-[inset_2px_0_0_rgba(184,76,255,0.95)]",
+                    active &&
+                      "bg-gradient-to-r from-brand/[0.17] to-brand/[0.035] text-white shadow-[inset_2px_0_0_rgba(184,76,255,0.95)]",
                   )}
                 >
-                  <item.icon className={cn("size-[17px] shrink-0", active ? "text-brand" : "text-sidebar-foreground/55")} />
+                  <item.icon
+                    className={cn(
+                      "size-[17px] shrink-0",
+                      active ? "text-brand" : "text-sidebar-foreground/55",
+                    )}
+                  />
                   <span className="truncate">{item.label}</span>
                   {item.label === "Assinantes" && isCreator ? (
-                    <span className="ml-auto rounded-full bg-brand/15 px-1.5 py-0.5 text-[9px] font-semibold text-brand">ATIVO</span>
+                    <span className="ml-auto rounded-full bg-brand/15 px-1.5 py-0.5 text-[9px] font-semibold text-brand">
+                      ATIVO
+                    </span>
                   ) : null}
                 </Link>
               );
@@ -168,14 +176,26 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           ) : null}
 
           <div className="flex items-center gap-2.5 rounded-2xl border border-white/[0.07] bg-white/[0.018] p-2.5">
-            <UserAvatar name={data?.profile?.display_name} path={data?.profile?.avatar_url} className="size-9" />
+            <UserAvatar
+              name={data?.profile?.display_name}
+              path={data?.profile?.avatar_url}
+              className="size-9"
+            />
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold">{data?.profile?.display_name ?? t("account", locale)}</p>
+              <p className="truncate text-xs font-semibold">
+                {data?.profile?.display_name ?? t("account", locale)}
+              </p>
               <p className="truncate text-[10px] text-muted-foreground">
                 {data?.profile?.username ? `@${data.profile.username}` : data?.user.email}
               </p>
             </div>
-            <Button variant="ghost" size="icon" aria-label={t("signOut", locale)} onClick={signOut} className="size-8 text-muted-foreground hover:text-foreground">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label={t("signOut", locale)}
+              onClick={signOut}
+              className="size-8 text-muted-foreground hover:text-foreground"
+            >
               <LogOut className="size-3.5" />
             </Button>
           </div>
@@ -186,10 +206,16 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
         <header className="sticky top-0 z-20 border-b border-white/[0.07] bg-[#07080d]/80 backdrop-blur-2xl">
           <div className="flex items-center justify-between gap-3 px-4 py-3.5 lg:px-7">
             <div className="flex min-w-0 items-center gap-3 lg:hidden">
-              <img src="/secret-mark.svg" alt="SECRET" className="size-8 shrink-0 rounded-lg shadow-[0_0_24px_rgba(184,76,255,0.18)]" />
+              <img
+                src="/secret-mark.svg"
+                alt="SECRET"
+                className="size-8 shrink-0 rounded-lg shadow-[0_0_24px_rgba(184,76,255,0.18)]"
+              />
               <div className="min-w-0">
                 <p className="truncate text-sm font-semibold">{title ?? roleLabel}</p>
-                <p className="truncate text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{roleLabel}</p>
+                <p className="truncate text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
+                  {roleLabel}
+                </p>
               </div>
             </div>
 
@@ -204,14 +230,22 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
 
             <div className="flex shrink-0 items-center gap-1">
               <NotificationBell />
-              <Button variant="ghost" size="icon" aria-label={t("signOut", locale)} className="lg:hidden" onClick={signOut}>
+              <Button
+                variant="ghost"
+                size="icon"
+                aria-label={t("signOut", locale)}
+                className="lg:hidden"
+                onClick={signOut}
+              >
                 <LogOut className="size-5" />
               </Button>
             </div>
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1500px] px-4 pb-28 pt-6 lg:px-7 lg:pb-12 lg:pt-7">{children}</main>
+        <main className="mx-auto w-full max-w-[1500px] px-4 pb-28 pt-6 lg:px-7 lg:pb-12 lg:pt-7">
+          {children}
+        </main>
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-30 border-t border-white/[0.07] bg-[#090a10]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden">
@@ -219,7 +253,14 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
           {nav.slice(0, 5).map((item) => {
             const active = pathname === item.to || pathname.startsWith(`${item.to}/`);
             return (
-              <Link key={`${item.to}-${item.label}`} to={item.to} className={cn("flex min-w-0 flex-1 flex-col items-center gap-1.5 py-2.5 text-[10px] font-medium text-muted-foreground", active && "text-brand")}>
+              <Link
+                key={`${item.to}-${item.label}`}
+                to={item.to}
+                className={cn(
+                  "flex min-w-0 flex-1 flex-col items-center gap-1.5 py-2.5 text-[10px] font-medium text-muted-foreground",
+                  active && "text-brand",
+                )}
+              >
                 <item.icon className="size-5" />
                 <span className="max-w-full truncate px-1">{item.label}</span>
               </Link>

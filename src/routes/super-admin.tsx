@@ -27,17 +27,10 @@ const items = [
   ["settings", "Configurações", Settings],
 ] as const;
 
-type CountableTable =
-  | "profiles"
-  | "creator_profiles"
-  | "subscriptions"
-  | "reports"
-  | "audit_logs";
+type CountableTable = "profiles" | "creator_profiles" | "subscriptions" | "reports" | "audit_logs";
 
 async function countRows(table: CountableTable) {
-  const { count, error } = await supabase
-    .from(table)
-    .select("id", { count: "exact", head: true });
+  const { count, error } = await supabase.from(table).select("id", { count: "exact", head: true });
 
   if (error) throw error;
   return count ?? 0;
@@ -57,13 +50,7 @@ function SuperAdminHome() {
   const overview = useQuery({
     queryKey: ["super-admin-overview"],
     queryFn: async () => {
-      const [
-        users,
-        creators,
-        activeSubscriptions,
-        openReports,
-        auditEvents,
-      ] = await Promise.all([
+      const [users, creators, activeSubscriptions, openReports, auditEvents] = await Promise.all([
         countRows("profiles"),
         countRows("creator_profiles"),
         countByStatus("subscriptions", "active"),
@@ -118,7 +105,7 @@ function SuperAdminHome() {
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Moeda</p>
-              <p className="mt-1 font-semibold">{PAYMENTS.currency}</p>
+              <p className="mt-1 font-semibold">{PAYMENTS.defaultCurrency}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">Comissão</p>
@@ -139,17 +126,15 @@ function SuperAdminHome() {
             >
               <Icon className="size-5 text-primary" />
               <h3 className="mt-4 font-semibold">{label}</h3>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Abrir {label.toLowerCase()}.
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">Abrir {label.toLowerCase()}.</p>
             </Link>
           ))}
         </div>
 
         {overview.error ? (
           <p className="mt-5 text-sm text-muted-foreground">
-            Alguns indicadores não puderam ser carregados; as áreas de controle
-            continuam protegidas por papel e RLS.
+            Alguns indicadores não puderam ser carregados; as áreas de controle continuam protegidas
+            por papel e RLS.
           </p>
         ) : null}
       </AppShell>

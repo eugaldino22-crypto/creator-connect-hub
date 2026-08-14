@@ -6,9 +6,19 @@ import { SuperAdminSettingsPanel } from "@/components/admin/SuperAdminSettingsPa
 import { SuperAdminAuditPanel } from "@/components/admin/SuperAdminAuditPanel";
 
 export const Route = createFileRoute("/super-admin/$section")({ component: SuperAdminSection });
-function SuperAdminSection(){
- const {section}=Route.useParams();
- return <RoleGate allowed={["super_admin"]}><AppShell title={`Super Admin · ${section}`}>
-  {section==="settings"?<SuperAdminSettingsPanel/>:section==="audit"?<SuperAdminAuditPanel/>:<SuperAdminOverview/>}
- </AppShell></RoleGate>;
+function SuperAdminSection() {
+  const { section } = Route.useParams();
+  return (
+    <RoleGate allowed={["super_admin"]}>
+      <AppShell title={`Super Admin · ${section}`}>
+        {section === "settings" ? (
+          <SuperAdminSettingsPanel />
+        ) : section === "audit" ? (
+          <SuperAdminAuditPanel />
+        ) : (
+          <SuperAdminOverview />
+        )}
+      </AppShell>
+    </RoleGate>
+  );
 }

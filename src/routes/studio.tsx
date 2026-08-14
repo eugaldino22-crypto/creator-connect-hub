@@ -93,6 +93,21 @@ function Sparkline({ reverse = false }: { reverse?: boolean }) {
 }
 
 function StudioHome() {
+  type StudioSubscription = {
+    id: string;
+    subscriber_id: string;
+    amount_cents: number;
+    creator_amount_cents: number;
+    currency: string;
+    status: string;
+    created_at: string;
+    paid_at: string | null;
+    profiles: {
+      display_name: string | null;
+      username: string | null;
+    } | null;
+  };
+
   const { data: current } = useCurrentUser();
   const creatorId = current?.user.id;
 
@@ -143,12 +158,7 @@ function StudioHome() {
           .eq("creator_id", creatorId)
           .maybeSingle(),
 
-        supabase
-          .from("video_calls")
-          .select("id,subscriber_id,status,started_at,ended_at,created_at")
-          .eq("creator_id", creatorId)
-          .order("created_at", { ascending: false })
-          .limit(5),
+        Promise.resolve({ data: [], error: null }),
 
         supabase
           .from("payout_requests")
@@ -169,7 +179,7 @@ function StudioHome() {
         if (result.error) throw result.error;
       }
 
-      const subscriptions = subscriptionsResult.data ?? [];
+      const subscriptions = (subscriptionsResult.data ?? []) as unknown as StudioSubscription[];
       const activeSubscriptions = subscriptions.filter(
         (subscription) => subscription.status === "active",
       );
@@ -200,7 +210,19 @@ function StudioHome() {
     },
   });
 
-  const overview = overviewQuery.data;
+  const overview = overviewQuery.data ?? {
+    profile: null,
+    subscriptions: [],
+    activeSubscriptions: [],
+    posts: [],
+    postCount: 0,
+    balance: null,
+    calls: [] as { id: string; status: string; created_at: string }[],
+    payouts: [],
+    gross: 0,
+    net: 0,
+    commission: 0,
+  };
   const creatorName = overview?.profile?.display_name ?? "Criador";
   const currency = overview?.balance?.currency ?? "BRL";
   const subscriberCount = overview?.activeSubscriptions.length ?? 0;
@@ -413,7 +435,8 @@ function StudioHome() {
                       </p>
                     </div>
                     <Link
-                      to="/studio/posts"
+                      to="/studio/$section"
+                      params={{ section: "posts" }}
                       className="text-[10px] font-semibold text-brand hover:underline"
                     >
                       Ver todas

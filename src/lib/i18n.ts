@@ -91,9 +91,8 @@ function normalizeLocale(value?: string | null): Locale {
   if (exact) return exact;
   const language = (value.split("-")[0] ?? "").toLowerCase();
   return (
-    SUPPORTED_LOCALES.find(
-      (locale) => (locale.split("-")[0] ?? "").toLowerCase() === language,
-    ) ?? FALLBACK_LOCALE
+    SUPPORTED_LOCALES.find((locale) => (locale.split("-")[0] ?? "").toLowerCase() === language) ??
+    FALLBACK_LOCALE
   );
 }
 
@@ -305,7 +304,7 @@ const dictionary = {
     backHome: "Повернутися до SECRET",
     error: "Не вдалося завантажити сторінку",
   },
-  "ar": {
+  ar: {
     feed: "موجزي",
     explore: "استكشاف",
     messages: "الرسائل",
@@ -323,7 +322,7 @@ const dictionary = {
     backHome: "العودة إلى SECRET",
     error: "تعذر تحميل هذه الصفحة",
   },
-  "he": {
+  he: {
     feed: "הפיד שלי",
     explore: "גילוי",
     messages: "הודעות",
@@ -443,7 +442,8 @@ export function useLocale(): Locale {
 }
 
 export function t(key: TranslationKey, locale: Locale = getLocale()) {
-  const selected = dictionary[locale as keyof typeof dictionary] as Partial<Record<TranslationKey, string>> | undefined;
+  const selected = dictionary[locale as keyof typeof dictionary] as
+    Partial<Record<TranslationKey, string>> | undefined;
   return selected?.[key] ?? dictionary["en-US"][key];
 }
 
@@ -455,7 +455,11 @@ export function formatNumber(value: number, locale = getLocale()) {
   return new Intl.NumberFormat(locale).format(value);
 }
 
-export function formatDate(value: Date | string | number, locale = getLocale(), options: Intl.DateTimeFormatOptions = {}) {
+export function formatDate(
+  value: Date | string | number,
+  locale = getLocale(),
+  options: Intl.DateTimeFormatOptions = {},
+) {
   return new Intl.DateTimeFormat(locale, options).format(new Date(value));
 }
 

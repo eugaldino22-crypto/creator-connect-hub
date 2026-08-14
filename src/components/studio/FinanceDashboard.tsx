@@ -57,7 +57,7 @@ export function FinanceDashboard() {
       if (subError) throw subError;
 
       const typedBalance = balance as CreatorBalance | null;
-      const typedSubs = (subs ?? []) as CreatorSubscription[];
+      const typedSubs = (subs ?? []) as unknown as CreatorSubscription[];
 
       const active = typedSubs.filter((subscription) => subscription.status === "active");
 

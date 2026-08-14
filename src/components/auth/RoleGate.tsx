@@ -21,13 +21,17 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
   const authorized = hasAnyRole(data?.roles, allowed) && !roleConflict && !creatorConflict;
 
   useEffect(() => {
-    if (!isLoading && !data?.user) navigate({ to: "/$section", params: { section: "auth" }, replace: true });
+    if (!isLoading && !data?.user)
+      navigate({ to: "/$section", params: { section: "auth" }, replace: true });
   }, [data?.user, isLoading, navigate]);
 
   useEffect(() => {
     if (isLoading || !data?.user || authorized) return;
     if (isCreator && subscriberPath) {
-      void navigate({ to: pathname === "/messages" ? "/studio/messages" : "/studio", replace: true });
+      void navigate({
+        to: pathname === "/messages" ? "/studio/messages" : "/studio",
+        replace: true,
+      });
       return;
     }
     if (isCreator && subscriberOnly) {
@@ -39,9 +43,21 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
       return;
     }
     void navigate({ to: "/", replace: true });
-  }, [authorized, creatorOnly, data?.user, isCreator, isLoading, isSubscriber, navigate, pathname, subscriberOnly, subscriberPath]);
+  }, [
+    authorized,
+    creatorOnly,
+    data?.user,
+    isCreator,
+    isLoading,
+    isSubscriber,
+    navigate,
+    pathname,
+    subscriberOnly,
+    subscriberPath,
+  ]);
 
   if (isLoading || !data?.user || !authorized) return <LoadingBlock label="Verificando acesso…" />;
-  if (data.profile?.is_suspended) return <LoadingBlock label="Conta suspensa. Entre em contato com o suporte." />;
+  if (data.profile?.is_suspended)
+    return <LoadingBlock label="Conta suspensa. Entre em contato com o suporte." />;
   return <>{children}</>;
 }

@@ -40,9 +40,7 @@ export function EmptyBlock({
         <h3 className="mt-2 text-xl font-semibold tracking-tight">{title}</h3>
 
         {description ? (
-          <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
-            {description}
-          </p>
+          <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">{description}</p>
         ) : null}
 
         {action ? <div className="mt-7">{action}</div> : null}

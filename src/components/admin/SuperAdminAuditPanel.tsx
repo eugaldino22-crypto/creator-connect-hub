@@ -33,7 +33,7 @@ export function SuperAdminAuditPanel() {
 
       if (error) throw error;
 
-      return (data ?? []) as AuditRow[];
+      return (data ?? []) as unknown as AuditRow[];
     },
   });
 
@@ -50,7 +50,7 @@ export function SuperAdminAuditPanel() {
     );
   }
 
-  if (!q.data.length) {
+  if (!(q.data ?? []).length) {
     return (
       <EmptyBlock
         title="Nenhuma alteração registrada"
@@ -74,7 +74,7 @@ export function SuperAdminAuditPanel() {
       </div>
 
       <div className="divide-y divide-border">
-        {q.data.map((row) => (
+        {(q.data ?? []).map((row) => (
           <div key={row.id} className="p-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>

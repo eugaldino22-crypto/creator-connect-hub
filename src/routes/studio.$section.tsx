@@ -20,7 +20,7 @@ import { useCurrentUser } from "@/hooks/use-session";
 import { createVideoCall } from "@/lib/video-calls";
 import { VideoCallPanel } from "@/components/video/VideoCallPanel";
 import { UserAvatar } from "@/components/common/UserAvatar";
-import { PREMIUM_BUCKET, PUBLIC_BUCKET } from "@/lib/media";
+import { PREMIUM_BUCKET, PUBLIC_BUCKET, uploadUserFile } from "@/lib/media";
 import { uploadPostImage } from "@/lib/media/images";
 import { FinanceDashboard } from "@/components/studio/FinanceDashboard";
 import { formatCents } from "@/lib/brand";
@@ -36,6 +36,11 @@ type StudioRow = {
   title?: string | null;
   is_active?: boolean | null;
   created_at?: string | null;
+  price_cents?: number | null;
+  currency?: string | null;
+  interval_months?: number | null;
+  user_id?: string | null;
+  creator_id?: string | null;
 };
 
 type SubscriberProfile = {
@@ -107,7 +112,7 @@ function StudioTableSection({ section }: { section: string }) {
   const [planName, setPlanName] = useState("");
   const [planDescription, setPlanDescription] = useState("");
   const [planPrice, setPlanPrice] = useState("");
-  const [planCurrency, setPlanCurrency] = useState(DEFAULT_CURRENCY);
+  const [planCurrency, setPlanCurrency] = useState<string>(DEFAULT_CURRENCY);
   const [planInterval, setPlanInterval] = useState("1");
   const [saving, setSaving] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -127,13 +132,13 @@ function StudioTableSection({ section }: { section: string }) {
       const { data, error } = await supabase
         .from(table)
         .select("*")
-        .eq(column, user.user.id)
+        .eq(column as never, user.user.id)
         .order("created_at", { ascending: false })
         .limit(50);
 
       if (error) throw error;
 
-      return (data ?? []) as StudioRow[];
+      return (data ?? []) as unknown as StudioRow[];
     },
   });
 
@@ -391,7 +396,7 @@ function StudioTableSection({ section }: { section: string }) {
               </thead>
 
               <tbody>
-                {q.data.map((row) => (
+                {(q.data ?? []).map((row) => (
                   <tr key={row.id} className="border-b border-border/60">
                     <td className="px-4 py-3 font-medium">{row.name ?? row.title ?? row.id}</td>
 
@@ -478,7 +483,7 @@ function SubscriberManager() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return (data ?? []) as SubscriberRow[];
+      return (data ?? []) as unknown as SubscriberRow[];
     },
   });
 
@@ -508,7 +513,7 @@ function SubscriberManager() {
             description="Quando uma assinatura for confirmada, o assinante aparecerá aqui."
           />
         ) : (
-          q.data.map((subscriber) => (
+          (q.data ?? []).map((subscriber) => (
             <div
               key={subscriber.id}
               className="surface-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center"
@@ -558,7 +563,7 @@ function CallsManager() {
 
       if (error) throw error;
 
-      return (data ?? []) as SubscriberRow[];
+      return (data ?? []) as unknown as SubscriberRow[];
     },
   });
 
@@ -612,7 +617,7 @@ function CallsManager() {
             description="Quando você tiver assinantes ativos, poderá iniciar chamadas com eles aqui."
           />
         ) : (
-          q.data.map((subscriber) => (
+          (q.data ?? []).map((subscriber) => (
             <div
               key={subscriber.id}
               className="surface-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center"

@@ -98,7 +98,7 @@ function AdminSection() {
                   </thead>
 
                   <tbody>
-                    {q.data.map((row) => (
+                    {(q.data ?? []).map((row) => (
                       <tr key={row.id} className="border-b border-border/60 last:border-0">
                         <td className="max-w-[280px] truncate px-4 py-3 font-mono text-xs">
                           {row.id}

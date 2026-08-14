@@ -17,14 +17,16 @@ export function UserAvatar({
   name,
   path,
   className,
+  compact,
 }: {
   name?: string | null | undefined;
   path?: string | null | undefined;
   className?: string | undefined;
+  compact?: boolean | undefined;
 }) {
   const { data: url } = useStorageUrl(PUBLIC_BUCKET, path);
   return (
-    <Avatar className={cn("size-10 border border-border", className)}>
+    <Avatar className={cn(compact ? "size-8" : "size-10", "border border-border", className)}>
       {url ? <AvatarImage src={url} alt={name ?? "Avatar"} /> : null}
       <AvatarFallback className="bg-secondary text-xs font-semibold text-secondary-foreground">
         {initials(name)}

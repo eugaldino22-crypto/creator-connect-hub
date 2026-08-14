@@ -36,7 +36,7 @@ export function NotificationBell() {
 
       if (error) throw error;
 
-      return (data ?? []) as NotificationItem[];
+      return (data ?? []) as unknown as NotificationItem[];
     },
   });
 
@@ -177,7 +177,7 @@ export function NotificationBell() {
 
           <div className="border-t border-border p-2">
             <Button asChild variant="ghost" className="w-full" onClick={() => setOpen(false)}>
-              <Link to="/notifications">Ver todas</Link>
+              <Link to="/feed">Ver todas</Link>
             </Button>
           </div>
         </div>

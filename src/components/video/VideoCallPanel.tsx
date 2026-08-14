@@ -97,7 +97,7 @@ function loadLiveKitClient(): Promise<LiveKitClient> {
       script.src =
         "https://cdn.jsdelivr.net/npm/livekit-client@2.21.0/dist/livekit-client.umd.min.js";
       script.async = true;
-      script.dataset.secretLivekit = "true";
+      script.dataset["secretLivekit"] = "true";
       document.head.appendChild(script);
     }
   });

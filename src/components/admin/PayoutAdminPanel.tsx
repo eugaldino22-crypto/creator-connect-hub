@@ -17,7 +17,7 @@ type PayoutRequest = {
   creator_id: string;
   amount_cents: number | null;
   currency: string | null;
-  destination: string;
+  destination: string | null;
   status: string;
   created_at: string;
   reviewed_at: string | null;
@@ -41,7 +41,7 @@ export function PayoutAdminPanel() {
 
       if (error) throw error;
 
-      return (data ?? []) as PayoutRequest[];
+      return (data ?? []) as unknown as PayoutRequest[];
     },
   });
 
@@ -49,7 +49,7 @@ export function PayoutAdminPanel() {
     const { error } = await supabase.rpc("review_creator_payout", {
       _payout_id: id,
       _decision: decision,
-      _reason: reason ?? null,
+      ...(reason ? { _reason: reason } : {}),
     });
 
     if (error) {
@@ -88,12 +88,14 @@ export function PayoutAdminPanel() {
         </div>
       </div>
 
-      {q.data.length === 0 ? (
+      {(q.data ?? []).length === 0 ? (
         <div className="surface-card p-8 text-center text-sm text-muted-foreground">
           Nenhuma solicitação de saque.
         </div>
       ) : (
-        q.data.map((payout) => <PayoutRow key={payout.id} payout={payout} onReview={review} />)
+        (q.data ?? []).map((payout) => (
+          <PayoutRow key={payout.id} payout={payout} onReview={review} />
+        ))
       )}
     </div>
   );

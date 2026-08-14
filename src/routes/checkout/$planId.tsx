@@ -128,7 +128,7 @@ function CheckoutPage() {
               </div>
 
               <Button asChild variant="ghost" className="mt-2 w-full">
-                <Link to="/explore">Voltar para Explore</Link>
+                <Link to="/feed">Voltar para Explore</Link>
               </Button>
             </div>
           )}

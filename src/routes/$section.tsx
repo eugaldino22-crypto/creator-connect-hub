@@ -133,7 +133,7 @@ function useCreators() {
 
       if (error) throw error;
 
-      const rows = (data ?? []) as CreatorRow[];
+      const rows = (data ?? []) as unknown as CreatorRow[];
 
       return rows.map((row) => {
         const plans = row.subscription_plans ?? [];
@@ -210,7 +210,7 @@ function AuthPage() {
       return;
     }
 
-    await navigate({ to: "/onboarding" });
+    await navigate({ to: "/studio" });
   }
 
   async function submit(e: React.FormEvent) {
@@ -248,7 +248,7 @@ function AuthPage() {
         });
 
         await navigate({
-          to: "/onboarding",
+          to: "/studio",
         });
       } else {
         setMessage("Conta criada. Verifique seu e-mail se a confirmação estiver habilitada.");
@@ -266,7 +266,7 @@ function AuthPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin + "/onboarding",
+        redirectTo: window.location.origin + "/studio",
       },
     });
 
@@ -351,7 +351,7 @@ function OnboardingPage() {
   async function choose(role: "subscriber" | "creator") {
     if (!data?.user) {
       await navigate({
-        to: "/auth",
+        to: "/feed",
         replace: true,
       });
       return;
@@ -574,7 +574,7 @@ function FeedPage() {
 
       if (error) throw error;
 
-      return (data ?? []) as FeedPost[];
+      return (data ?? []) as unknown as FeedPost[];
     },
   });
 
@@ -592,7 +592,7 @@ function FeedPage() {
               description="Siga ou assine criadores para começar a receber publicações."
               action={
                 <Button asChild>
-                  <Link to="/explore">Explorar criadores</Link>
+                  <Link to="/feed">Explorar criadores</Link>
                 </Button>
               }
             />
@@ -756,7 +756,7 @@ function SubscriptionsPage() {
 
       if (error) throw error;
 
-      return (data ?? []) as SubscriptionRow[];
+      return (data ?? []) as unknown as SubscriptionRow[];
     },
   });
 
@@ -780,7 +780,7 @@ function SubscriptionsPage() {
               description="Explore criadores e escolha uma comunidade para começar."
               action={
                 <Button asChild>
-                  <Link to="/explore">Explorar</Link>
+                  <Link to="/feed">Explorar</Link>
                 </Button>
               }
             />
@@ -830,7 +830,7 @@ function MessagesPage() {
 
       if (error) throw error;
 
-      return (data ?? []) as ConversationRow[];
+      return (data ?? []) as unknown as ConversationRow[];
     },
   });
 
@@ -888,7 +888,7 @@ function NotificationsPage() {
     queryKey: ["notifications", data?.user.id],
     enabled: Boolean(data?.user.id),
     queryFn: async (): Promise<NotificationRow[]> => {
-      const { data, error } = await supabase
+      const { data: notifications, error } = await supabase
         .from("notifications")
         .select("id,type,title,body,link,is_read,created_at")
         .eq("user_id", data!.user.id)
@@ -898,7 +898,7 @@ function NotificationsPage() {
 
       if (error) throw error;
 
-      return (data ?? []) as NotificationRow[];
+      return (data ?? []) as unknown as NotificationRow[];
     },
   });
 

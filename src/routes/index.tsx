@@ -34,7 +34,29 @@ function SecretMark() {
 }
 
 function Index() {
-  const creatorQuery = useQuery({
+  type HomePlan = {
+    id: string;
+    name: string | null;
+    description: string | null;
+    price_cents: number;
+    currency: string;
+    is_active: boolean;
+  };
+
+  type HomeCreator = {
+    user_id: string;
+    headline: string | null;
+    category: string | null;
+    is_verified: boolean;
+    profiles: {
+      username: string | null;
+      display_name: string | null;
+      avatar_url: string | null;
+    } | null;
+    subscription_plans: HomePlan[];
+  };
+
+  const creatorQuery = useQuery<HomeCreator | null>({
     queryKey: ["home-featured-creator"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,12 +70,12 @@ function Index() {
         .maybeSingle();
 
       if (error) throw error;
-      return data;
+      return data as unknown as HomeCreator | null;
     },
   });
 
   const creator = creatorQuery.data;
-  const plans = (creator?.subscription_plans ?? []).filter((plan) => plan.is_active);
+  const plans = creator?.subscription_plans.filter((plan: HomePlan) => plan.is_active) ?? [];
   const plan = plans[0];
   const creatorName = creator?.profiles?.display_name ?? "Criador";
   const creatorUsername = creator?.profiles?.username
@@ -63,7 +85,7 @@ function Index() {
     .trim()
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
+    .map((part: string) => part[0]?.toUpperCase() ?? "")
     .join("");
 
   return (
@@ -103,7 +125,7 @@ function Index() {
 
           <div className="flex shrink-0 items-center gap-2">
             <Link
-              to="/auth"
+              to="/feed"
               className="rounded-lg border border-white/10 bg-white/[0.035] px-4 py-2.5 text-sm font-semibold transition hover:bg-white/[0.06] sm:px-5"
             >
               Entrar
@@ -134,7 +156,7 @@ function Index() {
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              to="/auth"
+              to="/feed"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground shadow-[0_16px_36px_-20px_rgba(184,76,255,0.45)] transition hover:-translate-y-0.5"
             >
               Quero ser criador
@@ -374,7 +396,7 @@ function Index() {
               <CheckRow text="Receba propostas e negocie diretamente" />
             </div>
             <Link
-              to="/auth"
+              to="/feed"
               className="mt-8 inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5"
             >
               Criar minha comunidade
@@ -478,14 +500,14 @@ function Index() {
           </p>
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Link
-              to="/auth"
+              to="/feed"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-7 py-3.5 text-sm font-semibold text-brand-foreground transition hover:-translate-y-0.5"
             >
               Criar minha conta
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
-              to="/auth"
+              to="/feed"
               className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] px-7 py-3.5 text-sm font-semibold transition hover:bg-white/[0.05]"
             >
               Entrar na SECRET

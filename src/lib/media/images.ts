@@ -121,7 +121,7 @@ export async function getPostImageUrl(params: {
   return getProtectedImageUrl({
     bucket: data.bucket,
     path: data.storage_path,
-    expiresIn: params.expiresIn,
+    ...(params.expiresIn ? { expiresIn: params.expiresIn } : {}),
   });
 }
 

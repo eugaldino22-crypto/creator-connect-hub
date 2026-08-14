@@ -31,7 +31,7 @@ export function SuperAdminSettingsPanel() {
 
       if (error) throw error;
 
-      return (data ?? []) as PlatformSetting[];
+      return (data ?? []) as unknown as PlatformSetting[];
     },
   });
 
