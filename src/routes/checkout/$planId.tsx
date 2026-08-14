@@ -84,12 +84,12 @@ function CheckoutPage() {
                   <p className="text-xs text-muted-foreground">Assinatura mensal</p>
 
                   <p className="text-3xl font-semibold">
-                    {formatCents(q.data.price_cents, q.data.currency ?? "USD")}
+                    {formatCents(q.data.price_cents, q.data.currency ?? PAYMENTS.defaultCurrency)}
                   </p>
                 </div>
 
                 <div className="text-right text-xs text-muted-foreground">
-                  Moeda de referência: USD
+                  {`Moeda de referência: ${q.data.currency ?? PAYMENTS.defaultCurrency}`}
                 </div>
               </div>
 

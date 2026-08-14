@@ -14,6 +14,8 @@ import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-session";
 import { formatCents } from "@/lib/brand";
+import { PAYMENTS } from "@/lib/payments";
+import { ProtectedImage } from "@/components/media/ProtectedImage";
 
 type CreatorProfile = {
   username: string | null;
@@ -42,6 +44,19 @@ type FeedProfile = {
   avatar_url: string | null;
 };
 
+type FeedMedia = {
+  id: string;
+  post_id: string;
+  creator_id: string;
+  bucket: string;
+  storage_path: string;
+  media_type: string;
+  is_private: boolean;
+  position: number;
+  width: number | null;
+  height: number | null;
+};
+
 type FeedPost = {
   id: string;
   creator_id: string;
@@ -53,6 +68,7 @@ type FeedPost = {
   comment_count: number | null;
   created_at: string;
   profiles: FeedProfile | null;
+  post_media: FeedMedia[];
 };
 
 type SubscriptionPlan = {
@@ -131,7 +147,7 @@ function useCreators() {
           cheapest_plan_cents: plans.length
             ? Math.min(...plans.map((plan) => plan.price_cents ?? 0))
             : null,
-          currency: plans[0]?.currency ?? "USD",
+          currency: plans[0]?.currency ?? PAYMENTS.defaultCurrency,
         };
       });
     },
@@ -546,7 +562,7 @@ function FeedPage() {
       const { data, error } = await supabase
         .from("posts")
         .select(
-          "id,creator_id,title,body,visibility,is_published,like_count,comment_count,created_at,profiles:creator_id(username,display_name,avatar_url)",
+          "id,creator_id,title,body,visibility,is_published,like_count,comment_count,created_at,profiles:creator_id(username,display_name,avatar_url),post_media(id,post_id,creator_id,bucket,storage_path,media_type,is_private,position,width,height)",
         )
         .in("creator_id", ids)
         .eq("is_published", true)
@@ -679,6 +695,26 @@ function PostCard({ post }: { post: FeedPost }) {
           post.body && <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{post.body}</p>
         )}
 
+        {post.post_media?.length ? (
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {post.post_media
+              .filter((media) => media.media_type === "image")
+              .sort((a, b) => a.position - b.position)
+              .map((media) => (
+                <ProtectedImage
+                  key={media.id}
+                  bucket={media.bucket}
+                  path={media.storage_path}
+                  alt={post.title ?? "Imagem da publicação"}
+                  premium={media.is_private}
+                  watermark={media.is_private}
+                  viewerLabel={post.profiles?.username ?? "Usuário"}
+                  className="aspect-square w-full rounded-2xl border border-border bg-secondary/30"
+                />
+              ))}
+          </div>
+        ) : null}
+
         <div className="mt-4 flex items-center gap-2">
           <Button
             variant="ghost"
@@ -761,7 +797,7 @@ function SubscriptionsPage() {
 
                   <p className="text-sm text-muted-foreground">
                     {subscription.subscription_plans?.name ?? "Plano"} ·{" "}
-                    {subscription.subscription_plans?.currency ?? "USD"}
+                    {subscription.subscription_plans?.currency ?? PAYMENTS.defaultCurrency}
                   </p>
                 </div>
 

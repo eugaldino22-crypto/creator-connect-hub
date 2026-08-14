@@ -3,6 +3,7 @@ import { Wallet, Clock3, Percent, ArrowDownToLine } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-session";
 import { formatCents } from "@/lib/brand";
+import { PAYMENTS } from "@/lib/payments";
 import { LoadingBlock, EmptyBlock } from "@/components/common/StateBlocks";
 import { FinanceHistory } from "@/components/studio/FinanceHistory";
 import { PayoutRequestPanel } from "@/components/studio/PayoutRequestPanel";
@@ -94,6 +95,9 @@ export function FinanceDashboard() {
   }
 
   const balance = q.data?.balance;
+  const currency =
+    q.data?.subs.find((subscription) => subscription.currency)?.currency ??
+    PAYMENTS.defaultCurrency;
 
   return (
     <div className="space-y-5">
@@ -101,13 +105,13 @@ export function FinanceDashboard() {
         <Metric
           icon={<Wallet className="size-4" />}
           label="Disponível"
-          value={formatCents(balance?.available_cents ?? 0, "USD")}
+          value={formatCents(balance?.available_cents ?? 0, currency)}
         />
 
         <Metric
           icon={<Clock3 className="size-4" />}
           label="Pendente"
-          value={formatCents(balance?.pending_cents ?? 0, "USD")}
+          value={formatCents(balance?.pending_cents ?? 0, currency)}
         />
 
         <Metric icon={<Percent className="size-4" />} label="Comissão SECRET" value="15%" />
@@ -127,16 +131,17 @@ export function FinanceDashboard() {
         </div>
 
         <div className="mt-5 grid gap-4 sm:grid-cols-3">
-          <Summary label="Receita bruta" value={formatCents(q.data?.gross ?? 0, "USD")} />
+          <Summary label="Receita bruta" value={formatCents(q.data?.gross ?? 0, currency)} />
 
-          <Summary label="Sua receita" value={formatCents(q.data?.net ?? 0, "USD")} />
+          <Summary label="Sua receita" value={formatCents(q.data?.net ?? 0, currency)} />
 
-          <Summary label="Comissão" value={formatCents(q.data?.commission ?? 0, "USD")} />
+          <Summary label="Comissão" value={formatCents(q.data?.commission ?? 0, currency)} />
         </div>
       </div>
 
       <PayoutRequestPanel
         availableCents={balance?.available_cents ?? 0}
+        currency={currency}
         onCreated={() => void q.refetch()}
       />
 
@@ -176,7 +181,7 @@ export function FinanceDashboard() {
                   <p>
                     {formatCents(
                       subscription.creator_amount_cents ?? 0,
-                      subscription.currency ?? "USD",
+                      subscription.currency ?? PAYMENTS.defaultCurrency,
                     )}
                   </p>
 

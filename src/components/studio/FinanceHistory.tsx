@@ -3,6 +3,7 @@ import { ArrowDownLeft, ArrowUpRight, Clock3 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useCurrentUser } from "@/hooks/use-session";
 import { formatCents } from "@/lib/brand";
+import { PAYMENTS } from "@/lib/payments";
 import { EmptyBlock, LoadingBlock } from "@/components/common/StateBlocks";
 
 type SubscriptionHistoryRow = {
@@ -77,7 +78,7 @@ export function FinanceHistory() {
           id: `sub-${subscription.id}`,
           kind: "subscription" as const,
           amount: subscription.creator_amount_cents ?? 0,
-          currency: subscription.currency ?? "USD",
+          currency: subscription.currency ?? PAYMENTS.defaultCurrency,
           status: subscription.status,
           date: subscription.paid_at ?? subscription.created_at,
           label: "Receita de assinatura",
@@ -88,7 +89,7 @@ export function FinanceHistory() {
           id: `payout-${payout.id}`,
           kind: "payout" as const,
           amount: payout.amount_cents ?? 0,
-          currency: payout.currency ?? "USD",
+          currency: payout.currency ?? PAYMENTS.defaultCurrency,
           status: payout.status,
           date: payout.reviewed_at ?? payout.created_at,
           label: "Solicitação de saque",

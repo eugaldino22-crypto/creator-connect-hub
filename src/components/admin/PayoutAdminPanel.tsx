@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { formatCents } from "@/lib/brand";
+import { PAYMENTS } from "@/lib/payments";
 
 type PayoutProfile = {
   display_name: string | null;
@@ -120,7 +121,7 @@ function PayoutRow({
           </p>
 
           <p className="mt-3 text-2xl font-semibold">
-            {formatCents(payout.amount_cents ?? 0, payout.currency ?? "USD")}
+            {formatCents(payout.amount_cents ?? 0, payout.currency ?? PAYMENTS.defaultCurrency)}
           </p>
 
           <p className="mt-1 break-all text-sm text-muted-foreground">
