@@ -109,21 +109,6 @@ export function SubscriberDashboard() {
               Aqui você acompanha tudo dos seus criadores favoritos.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-2 rounded-xl border border-white/[0.08] bg-black/20 px-3 py-2.5 sm:flex">
-              <Search className="size-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Buscar criadores, conteúdos…</span>
-            </div>
-            <button
-              className="relative flex size-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025]"
-              aria-label="Notificações"
-            >
-              <Bell className="size-4" />
-              <span className="absolute -right-1 -top-1 flex size-4 items-center justify-center rounded-full bg-brand text-[9px] font-bold">
-                2
-              </span>
-            </button>
-          </div>
         </div>
       </section>
       <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
