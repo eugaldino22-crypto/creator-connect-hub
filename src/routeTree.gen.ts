@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SectionRouteImport } from './routes/$section'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MessagesRouteImport } from './routes/messages'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
@@ -19,6 +20,7 @@ import { Route as AdminSectionRouteImport } from './routes/admin.$section'
 import { Route as CUsernameRouteImport } from './routes/c/$username'
 import { Route as CheckoutPlanIdRouteImport } from './routes/checkout/$planId'
 import { Route as StudioSectionRouteImport } from './routes/studio.$section'
+import { Route as StudioMessagesRouteImport } from './routes/studio.messages'
 import { Route as SuperAdminSectionRouteImport } from './routes/super-admin.$section'
 
 const IndexRoute = IndexRouteImport.update({
@@ -34,6 +36,11 @@ const SectionRoute = SectionRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesRoute = MessagesRouteImport.update({
@@ -71,6 +78,11 @@ const StudioSectionRoute = StudioSectionRouteImport.update({
   path: '/$section',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioMessagesRoute = StudioMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => StudioRoute,
+} as any)
 const SuperAdminSectionRoute = SuperAdminSectionRouteImport.update({
   id: '/$section',
   path: '/$section',
@@ -81,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$section': typeof SectionRoute
   '/admin': typeof AdminRouteWithChildren
+  '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
@@ -88,12 +101,14 @@ export interface FileRoutesByFullPath {
   '/c/$username': typeof CUsernameRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/studio/$section': typeof StudioSectionRoute
+  '/studio/messages': typeof StudioMessagesRoute
   '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$section': typeof SectionRoute
   '/admin': typeof AdminRouteWithChildren
+  '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
@@ -101,6 +116,7 @@ export interface FileRoutesByTo {
   '/c/$username': typeof CUsernameRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/studio/$section': typeof StudioSectionRoute
+  '/studio/messages': typeof StudioMessagesRoute
   '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRoutesById {
@@ -108,6 +124,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$section': typeof SectionRoute
   '/admin': typeof AdminRouteWithChildren
+  '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
@@ -115,6 +132,7 @@ export interface FileRoutesById {
   '/c/$username': typeof CUsernameRoute
   '/checkout/$planId': typeof CheckoutPlanIdRoute
   '/studio/$section': typeof StudioSectionRoute
+  '/studio/messages': typeof StudioMessagesRoute
   '/super-admin/$section': typeof SuperAdminSectionRoute
 }
 export interface FileRouteTypes {
@@ -123,6 +141,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$section'
     | '/admin'
+    | '/feed'
     | '/messages'
     | '/studio'
     | '/super-admin'
@@ -130,12 +149,14 @@ export interface FileRouteTypes {
     | '/c/$username'
     | '/checkout/$planId'
     | '/studio/$section'
+    | '/studio/messages'
     | '/super-admin/$section'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/$section'
     | '/admin'
+    | '/feed'
     | '/messages'
     | '/studio'
     | '/super-admin'
@@ -143,12 +164,14 @@ export interface FileRouteTypes {
     | '/c/$username'
     | '/checkout/$planId'
     | '/studio/$section'
+    | '/studio/messages'
     | '/super-admin/$section'
   id:
     | '__root__'
     | '/'
     | '/$section'
     | '/admin'
+    | '/feed'
     | '/messages'
     | '/studio'
     | '/super-admin'
@@ -156,6 +179,7 @@ export interface FileRouteTypes {
     | '/c/$username'
     | '/checkout/$planId'
     | '/studio/$section'
+    | '/studio/messages'
     | '/super-admin/$section'
   fileRoutesById: FileRoutesById
 }
@@ -163,6 +187,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SectionRoute: typeof SectionRoute
   AdminRoute: typeof AdminRouteWithChildren
+  FeedRoute: typeof FeedRoute
   MessagesRoute: typeof MessagesRoute
   StudioRoute: typeof StudioRouteWithChildren
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
@@ -191,6 +216,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages': {
@@ -242,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioSectionRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/messages': {
+      id: '/studio/messages'
+      path: '/messages'
+      fullPath: '/studio/messages'
+      preLoaderRoute: typeof StudioMessagesRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/super-admin/$section': {
       id: '/super-admin/$section'
       path: '/$section'
@@ -264,10 +303,12 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface StudioRouteChildren {
   StudioSectionRoute: typeof StudioSectionRoute
+  StudioMessagesRoute: typeof StudioMessagesRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
   StudioSectionRoute: StudioSectionRoute,
+  StudioMessagesRoute: StudioMessagesRoute,
 }
 
 const StudioRouteWithChildren =
@@ -289,6 +330,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SectionRoute: SectionRoute,
   AdminRoute: AdminRouteWithChildren,
+  FeedRoute: FeedRoute,
   MessagesRoute: MessagesRoute,
   StudioRoute: StudioRouteWithChildren,
   SuperAdminRoute: SuperAdminRouteWithChildren,
