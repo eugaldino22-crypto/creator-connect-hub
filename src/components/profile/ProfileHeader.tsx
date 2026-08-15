@@ -12,7 +12,7 @@ type Props = {
 
 export function ProfileHeader({ name, email, avatar, loading, onChangeAvatar }: Props) {
   return (
-    <div className="surface-card flex items-center gap-5 p-6">
+    <div className="settings-card flex items-center gap-5 p-6">
       <div className="relative">
         <UserAvatar name={name} path={avatar} className="size-24" />
 

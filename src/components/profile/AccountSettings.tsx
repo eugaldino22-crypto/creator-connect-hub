@@ -38,7 +38,7 @@ export function AccountSettings({ name, username, bio, onSave }: Props) {
   }
 
   return (
-    <section className="surface-card space-y-5 p-6">
+    <section className="settings-card space-y-5 p-6">
       <div>
         <h3 className="text-lg font-semibold">Informações pessoais</h3>
 

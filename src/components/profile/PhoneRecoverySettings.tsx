@@ -70,7 +70,7 @@ export function PhoneRecoverySettings({ userId, phone, verified, onSaved }: Prop
   }
 
   return (
-    <section className="surface-card space-y-5 p-6">
+    <section className="settings-card space-y-5 p-6">
       <div>
         <h3 className="text-lg font-semibold">Telefone de recuperação</h3>
 

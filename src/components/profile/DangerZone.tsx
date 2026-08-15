@@ -12,7 +12,7 @@ export function DangerZone() {
   }
 
   return (
-    <section className="surface-card space-y-4 p-6">
+    <section className="settings-card space-y-4 p-6">
       <div>
         <h3 className="text-lg font-semibold text-red-500">Zona de perigo</h3>
 

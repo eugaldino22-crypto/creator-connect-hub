@@ -161,6 +161,29 @@
   box-shadow: var(--shadow-elevated);
 }
 
+@utility settings-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+  width: 100%;
+}
+
+@utility dashboard-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+  width: 100%;
+}
+
+@utility content-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-elevated);
+}
+
 @utility text-gradient-brand {
   background-image: linear-gradient(100deg, var(--brand), oklch(0.72 0.2 325));
   background-clip: text;
