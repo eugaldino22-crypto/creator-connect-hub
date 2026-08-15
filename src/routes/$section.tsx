@@ -162,6 +162,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+  const [forgotPassword, setForgotPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -319,7 +320,17 @@ function AuthPage() {
             minLength={8}
           />
 
-          <PasswordRecovery />
+          {mode === "login" && !forgotPassword && (
+            <button
+              type="button"
+              className="text-sm text-muted-foreground underline hover:text-foreground"
+              onClick={() => setForgotPassword(true)}
+            >
+              Esqueci minha senha?
+            </button>
+          )}
+
+          {forgotPassword && <PasswordRecovery />}
 
           {message && <p className="text-sm text-muted-foreground">{message}</p>}
 
