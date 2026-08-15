@@ -16,6 +16,7 @@ import { useCurrentUser } from "@/hooks/use-session";
 import { formatCents } from "@/lib/brand";
 import { PAYMENTS } from "@/lib/payments";
 import { ProtectedImage } from "@/components/media/ProtectedImage";
+import { PasswordRecovery } from "@/components/auth/PasswordRecovery";
 
 type CreatorProfile = {
   username: string | null;
@@ -161,6 +162,7 @@ function AuthPage() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [message, setMessage] = useState("");
+
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -316,6 +318,8 @@ function AuthPage() {
             required
             minLength={8}
           />
+
+          <PasswordRecovery />
 
           {message && <p className="text-sm text-muted-foreground">{message}</p>}
 

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  Search,
   BarChart3,
   CalendarDays,
   Compass,
@@ -25,6 +26,8 @@ import { useLocale, t } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { IncomingVideoCallBanner } from "@/components/video/IncomingVideoCallBanner";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { UserMenu } from "@/components/layout/UserMenu";
+import { GlobalSearch } from "@/components/search/GlobalSearch";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string; icon: typeof Compass };
@@ -228,8 +231,13 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
               <h1 className="mt-1 truncate text-xl font-semibold tracking-tight">{title}</h1>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1">
+            <div className="flex shrink-0 items-center gap-2">
+              <GlobalSearch />
+
               <NotificationBell />
+
+              <UserMenu />
+
               <Button
                 variant="ghost"
                 size="icon"

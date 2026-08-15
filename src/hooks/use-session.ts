@@ -13,6 +13,8 @@ export type Profile = {
   cover_url: string | null;
   onboarding_completed: boolean;
   is_suspended: boolean;
+  phone_number: string | null;
+  phone_verified: boolean;
 };
 
 export function useSession() {
@@ -37,7 +39,7 @@ export function useCurrentUser() {
         supabase
           .from("profiles")
           .select(
-            "id, username, display_name, bio, avatar_url, cover_url, onboarding_completed, is_suspended",
+            "id, username, display_name, bio, avatar_url, cover_url, onboarding_completed, is_suspended, phone_number, phone_verified",
           )
           .eq("id", user.id)
           .maybeSingle(),

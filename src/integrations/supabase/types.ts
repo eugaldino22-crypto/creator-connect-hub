@@ -514,6 +514,8 @@ export type Database = {
           id: string;
           is_suspended: boolean;
           onboarding_completed: boolean;
+          phone_number: string | null;
+          phone_verified: boolean;
           updated_at: string;
           username: string | null;
         };
@@ -527,6 +529,8 @@ export type Database = {
           id: string;
           is_suspended?: boolean;
           onboarding_completed?: boolean;
+          phone_number?: string | null;
+          phone_verified?: boolean;
           updated_at?: string;
           username?: string | null;
         };
@@ -540,6 +544,8 @@ export type Database = {
           id?: string;
           is_suspended?: boolean;
           onboarding_completed?: boolean;
+          phone_number?: string | null;
+          phone_verified?: boolean;
           updated_at?: string;
           username?: string | null;
         };

@@ -14,6 +14,8 @@ import { Route as SectionRouteImport } from './routes/$section'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as MessagesRouteImport } from './routes/messages'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as SuperAdminRouteImport } from './routes/super-admin'
 import { Route as AdminSectionRouteImport } from './routes/admin.$section'
@@ -46,6 +48,16 @@ const FeedRoute = FeedRouteImport.update({
 const MessagesRoute = MessagesRouteImport.update({
   id: '/messages',
   path: '/messages',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const StudioRoute = StudioRouteImport.update({
@@ -95,6 +107,8 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/admin/$section': typeof AdminSectionRoute
@@ -110,6 +124,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/admin/$section': typeof AdminSectionRoute
@@ -126,6 +142,8 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/feed': typeof FeedRoute
   '/messages': typeof MessagesRoute
+  '/profile': typeof ProfileRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/studio': typeof StudioRouteWithChildren
   '/super-admin': typeof SuperAdminRouteWithChildren
   '/admin/$section': typeof AdminSectionRoute
@@ -143,6 +161,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/feed'
     | '/messages'
+    | '/profile'
+    | '/reset-password'
     | '/studio'
     | '/super-admin'
     | '/admin/$section'
@@ -158,6 +178,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/feed'
     | '/messages'
+    | '/profile'
+    | '/reset-password'
     | '/studio'
     | '/super-admin'
     | '/admin/$section'
@@ -173,6 +195,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/feed'
     | '/messages'
+    | '/profile'
+    | '/reset-password'
     | '/studio'
     | '/super-admin'
     | '/admin/$section'
@@ -189,6 +213,8 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   FeedRoute: typeof FeedRoute
   MessagesRoute: typeof MessagesRoute
+  ProfileRoute: typeof ProfileRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   StudioRoute: typeof StudioRouteWithChildren
   SuperAdminRoute: typeof SuperAdminRouteWithChildren
   CUsernameRoute: typeof CUsernameRoute
@@ -230,6 +256,20 @@ declare module '@tanstack/react-router' {
       path: '/messages'
       fullPath: '/messages'
       preLoaderRoute: typeof MessagesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/studio': {
@@ -332,6 +372,8 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   FeedRoute: FeedRoute,
   MessagesRoute: MessagesRoute,
+  ProfileRoute: ProfileRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   StudioRoute: StudioRouteWithChildren,
   SuperAdminRoute: SuperAdminRouteWithChildren,
   CUsernameRoute: CUsernameRoute,
