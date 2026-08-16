@@ -133,7 +133,13 @@ function MediaPreview({ media, canView }: { media: CreatorMedia; canView: boolea
     );
   }
 
-  return <img src={url} alt="Conteúdo do criador" className="aspect-square w-full rounded-2xl border border-white/[0.08] object-cover" />;
+  return (
+    <img
+      src={url}
+      alt="Conteúdo do criador"
+      className="aspect-square w-full rounded-2xl border border-white/[0.08] object-cover"
+    />
+  );
 }
 
 function CreatorPage() {
@@ -264,9 +270,11 @@ function CreatorPage() {
     );
   }
 
-  const creatorProfile = q.data.creator_profiles?.[0] ?? null;
+  const profile = q.data;
+  const creatorProfile = profile.creator_profiles?.[0] ?? null;
   const plans = creatorProfile?.subscription_plans?.filter((plan) => plan.is_active) ?? [];
-  const creatorName = q.data.display_name ?? "Criador";
+  const firstPlan = plans.length > 0 ? plans[0] : null;
+  const creatorName = profile.display_name ?? "Criador";
   const canViewSubscriberContent = hasActiveSubscription || currentUser?.user.id === creatorId;
 
   async function shareProfile() {
@@ -306,8 +314,8 @@ function CreatorPage() {
             <div className="-mt-12 flex items-end justify-between gap-4">
               <div className="rounded-full bg-[#0b0d14] p-1.5">
                 <UserAvatar
-                  name={q.data.display_name}
-                  path={q.data.avatar_url}
+                  name={profile.display_name}
+                  path={profile.avatar_url}
                   className="size-24 ring-1 ring-white/10 sm:size-28"
                 />
               </div>
@@ -319,10 +327,12 @@ function CreatorPage() {
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{creatorName}</h1>
               {creatorProfile?.is_verified ? <BadgeCheck className="size-5 text-brand" /> : null}
-              {creatorProfile?.category ? <Badge variant="secondary">{creatorProfile.category}</Badge> : null}
+              {creatorProfile?.category ? (
+                <Badge variant="secondary">{creatorProfile.category}</Badge>
+              ) : null}
             </div>
 
-            <p className="mt-1 text-sm text-muted-foreground">@{q.data.username}</p>
+            <p className="mt-1 text-sm text-muted-foreground">@{profile.username}</p>
 
             <p className="mt-4 max-w-2xl text-sm leading-6 text-muted-foreground">
               {creatorProfile?.about ??
@@ -339,19 +349,22 @@ function CreatorPage() {
                       Assinatura
                     </div>
                     <h2 className="mt-1 text-lg font-semibold">
-                      {canViewSubscriberContent ? "Você tem acesso a esta comunidade" : "Acesso exclusivo para assinantes"}
+                      {canViewSubscriberContent
+                        ? "Você tem acesso a esta comunidade"
+                        : "Acesso exclusivo para assinantes"}
                     </h2>
                     <p className="mt-1 text-sm text-muted-foreground">
                       {canViewSubscriberContent
                         ? "Conteúdos e experiências liberados para sua assinatura."
-                        : plans[0].description ?? "Assine para acessar as publicações exclusivas deste criador."}
+                        : (plans[0]!.description ??
+                          "Assine para acessar as publicações exclusivas deste criador.")}
                     </p>
                   </div>
 
                   {!canViewSubscriberContent ? (
                     <Button asChild className="shrink-0 rounded-xl px-6">
-                      <Link to="/checkout/$planId" params={{ planId: plans[0].id }}>
-                        Assinar por {formatCents(plans[0].price_cents, plans[0].currency)}
+                      <Link to="/checkout/$planId" params={{ planId: plans[0]!.id }}>
+                        Assinar por {formatCents(plans[0]!.price_cents, plans[0]!.currency)}
                       </Link>
                     </Button>
                   ) : (
@@ -370,7 +383,9 @@ function CreatorPage() {
                 className={`relative flex items-center gap-2 px-3 py-3 text-sm font-semibold transition ${tab === "posts" ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
               >
                 <span>{postCount.data ?? 0} PUBLICAÇÕES</span>
-                {tab === "posts" ? <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-brand" /> : null}
+                {tab === "posts" ? (
+                  <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-brand" />
+                ) : null}
               </button>
               <button
                 type="button"
@@ -379,7 +394,9 @@ function CreatorPage() {
               >
                 <ImageIcon className="size-4" />
                 <span>{mediaCount.data ?? 0} MÍDIA</span>
-                {tab === "media" ? <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-brand" /> : null}
+                {tab === "media" ? (
+                  <span className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-brand" />
+                ) : null}
               </button>
             </div>
           </div>
@@ -399,16 +416,26 @@ function CreatorPage() {
                 const locked = post.visibility === "subscribers" && !canViewSubscriberContent;
 
                 return (
-                  <article key={post.id} className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0d14]">
+                  <article
+                    key={post.id}
+                    className="overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b0d14]"
+                  >
                     <div className="flex items-center gap-3 px-5 pt-5">
-                      <UserAvatar name={q.data.display_name} path={q.data.avatar_url} className="size-9" />
+                      <UserAvatar
+                        name={profile.display_name}
+                        path={profile.avatar_url}
+                        className="size-9"
+                      />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5">
                           <span className="truncate text-sm font-semibold">{creatorName}</span>
-                          {creatorProfile?.is_verified ? <BadgeCheck className="size-3.5 text-brand" /> : null}
+                          {creatorProfile?.is_verified ? (
+                            <BadgeCheck className="size-3.5 text-brand" />
+                          ) : null}
                         </div>
                         <div className="text-[11px] text-muted-foreground">
-                          @{q.data.username} · {new Date(post.created_at).toLocaleDateString("pt-BR")}
+                          @{profile.username} ·{" "}
+                          {new Date(post.created_at).toLocaleDateString("pt-BR")}
                         </div>
                       </div>
                       {post.visibility === "subscribers" ? (
@@ -427,13 +454,15 @@ function CreatorPage() {
                             <div className="mx-auto flex size-11 items-center justify-center rounded-full border border-brand/15 bg-brand/10 text-brand">
                               <Lock className="size-5" />
                             </div>
-                            <p className="mt-3 font-semibold">Publicação exclusiva para assinantes</p>
+                            <p className="mt-3 font-semibold">
+                              Publicação exclusiva para assinantes
+                            </p>
                             <p className="mt-1 text-sm text-muted-foreground">
                               Assine esta comunidade para desbloquear este conteúdo.
                             </p>
                             {plans[0] ? (
                               <Button asChild className="mt-4 rounded-xl">
-                                <Link to="/checkout/$planId" params={{ planId: plans[0].id }}>
+                                <Link to="/checkout/$planId" params={{ planId: plans[0]!.id }}>
                                   Assinar agora
                                 </Link>
                               </Button>
@@ -442,10 +471,16 @@ function CreatorPage() {
                         </div>
                       ) : (
                         <>
-                          {post.body ? <p className="whitespace-pre-wrap text-sm leading-7">{post.body}</p> : null}
+                          {post.body ? (
+                            <p className="whitespace-pre-wrap text-sm leading-7">{post.body}</p>
+                          ) : null}
                           <div className="mt-5 flex items-center gap-5 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1.5"><Heart className="size-4" /> {post.like_count ?? 0}</span>
-                            <span className="inline-flex items-center gap-1.5"><MessageCircle className="size-4" /> {post.comment_count ?? 0}</span>
+                            <span className="inline-flex items-center gap-1.5">
+                              <Heart className="size-4" /> {post.like_count ?? 0}
+                            </span>
+                            <span className="inline-flex items-center gap-1.5">
+                              <MessageCircle className="size-4" /> {post.comment_count ?? 0}
+                            </span>
                           </div>
                         </>
                       )}
@@ -460,7 +495,10 @@ function CreatorPage() {
             {media.isLoading ? (
               <LoadingBlock />
             ) : media.data?.length === 0 ? (
-              <EmptyBlock title="Nenhuma mídia ainda" description="Este criador ainda não publicou mídia." />
+              <EmptyBlock
+                title="Nenhuma mídia ainda"
+                description="Este criador ainda não publicou mídia."
+              />
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {media.data?.map((item) => (
@@ -479,12 +517,16 @@ function CreatorPage() {
           <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-4">
             <ImageIcon className="size-4 text-brand" />
             <p className="mt-3 text-sm font-semibold">Conteúdo exclusivo</p>
-            <p className="mt-1 text-xs text-muted-foreground">Fotos e publicações para assinantes.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Fotos e publicações para assinantes.
+            </p>
           </div>
           <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-4">
             <Video className="size-4 text-brand" />
             <p className="mt-3 text-sm font-semibold">Experiências</p>
-            <p className="mt-1 text-xs text-muted-foreground">Experiências e chamadas quando disponíveis.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Experiências e chamadas quando disponíveis.
+            </p>
           </div>
           <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-4">
             <MessageCircle className="size-4 text-brand" />
@@ -494,7 +536,9 @@ function CreatorPage() {
           <div className="rounded-2xl border border-white/[0.08] bg-[#0b0d14] p-4">
             <CalendarDays className="size-4 text-brand" />
             <p className="mt-3 text-sm font-semibold">Experiências ao vivo</p>
-            <p className="mt-1 text-xs text-muted-foreground">Disponibilidade conforme a oferta do criador.</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Disponibilidade conforme a oferta do criador.
+            </p>
           </div>
         </div>
       </div>
