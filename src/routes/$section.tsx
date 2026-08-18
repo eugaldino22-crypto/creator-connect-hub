@@ -391,27 +391,11 @@ function OnboardingPage() {
       return;
     }
 
-    const { error: roleError } = await supabase.from("user_roles").insert({
-      user_id: data.user.id,
-      role,
-    });
+    const { error: roleError } = await supabase.rpc("become_subscriber");
 
-    if (roleError && !roleError.message.toLowerCase().includes("duplicate")) {
+    if (roleError) {
       setBusy(false);
       setError(roleError.message);
-      return;
-    }
-
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({
-        onboarding_completed: true,
-      })
-      .eq("id", data.user.id);
-
-    if (profileError) {
-      setBusy(false);
-      setError(profileError.message);
       return;
     }
 

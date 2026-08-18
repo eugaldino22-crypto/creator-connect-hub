@@ -773,6 +773,7 @@ export type Database = {
     }
     Functions: {
       become_creator: { Args: never; Returns: undefined }
+      become_subscriber: { Args: never; Returns: undefined }
       has_active_subscription: {
         Args: { _creator: string; _subscriber: string }
         Returns: boolean
