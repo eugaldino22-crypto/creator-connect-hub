@@ -1,47 +1,38 @@
 import type { ReactNode } from "react";
 import { useEffect } from "react";
-import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useNavigate } from "@tanstack/react-router";
 import { hasAnyRole, type AppRole, useCurrentUser } from "@/hooks/use-session";
 import { LoadingBlock } from "@/components/common/StateBlocks";
-
-const SUBSCRIBER_PATHS = new Set(["/feed", "/explore", "/subscriptions", "/messages"]);
 
 export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: ReactNode }) {
   const { data, isLoading } = useCurrentUser();
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   const isCreator = hasAnyRole(data?.roles, ["creator"]);
   const isSubscriber = hasAnyRole(data?.roles, ["subscriber"]);
-  const subscriberOnly = allowed.includes("subscriber") && !allowed.includes("creator");
   const creatorOnly = allowed.includes("creator") && !allowed.includes("subscriber");
-  const subscriberPath = SUBSCRIBER_PATHS.has(pathname);
-  const roleConflict = (subscriberOnly || subscriberPath) && isCreator;
-  const creatorConflict = creatorOnly && isSubscriber;
-  const authorized = hasAnyRole(data?.roles, allowed) && !roleConflict && !creatorConflict;
+  const subscriberOnly = allowed.includes("subscriber") && !allowed.includes("creator");
+  const authorized = hasAnyRole(data?.roles, allowed);
 
   useEffect(() => {
-    if (!isLoading && !data?.user)
-      navigate({ to: "/$section", params: { section: "auth" }, replace: true });
+    if (!isLoading && !data?.user) {
+      void navigate({ to: "/$section", params: { section: "auth" }, replace: true });
+    }
   }, [data?.user, isLoading, navigate]);
 
   useEffect(() => {
     if (isLoading || !data?.user || authorized) return;
-    if (isCreator && subscriberPath) {
-      void navigate({
-        to: pathname === "/messages" ? "/studio/messages" : "/studio",
-        replace: true,
-      });
-      return;
-    }
-    if (isCreator && subscriberOnly) {
+
+    if (isCreator && creatorOnly) {
       void navigate({ to: "/studio", replace: true });
       return;
     }
-    if (isSubscriber && creatorOnly) {
+
+    if (isSubscriber && subscriberOnly) {
       void navigate({ to: "/feed", replace: true });
       return;
     }
+
     void navigate({ to: "/", replace: true });
   }, [
     authorized,
@@ -51,13 +42,16 @@ export function RoleGate({ allowed, children }: { allowed: AppRole[]; children: 
     isLoading,
     isSubscriber,
     navigate,
-    pathname,
     subscriberOnly,
-    subscriberPath,
   ]);
 
-  if (isLoading || !data?.user || !authorized) return <LoadingBlock label="Verificando acesso…" />;
-  if (data.profile?.is_suspended)
+  if (isLoading || !data?.user || !authorized) {
+    return <LoadingBlock label="Verificando acesso…" />;
+  }
+
+  if (data.profile?.is_suspended) {
     return <LoadingBlock label="Conta suspensa. Entre em contato com o suporte." />;
+  }
+
   return <>{children}</>;
 }
