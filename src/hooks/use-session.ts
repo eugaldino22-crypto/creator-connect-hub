@@ -1,6 +1,8 @@
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { QA_ENABLED, previewRolesFor, useQaPreview } from "@/lib/qa-preview";
 
 export type AppRole = "subscriber" | "creator" | "admin" | "super_admin";
 
@@ -29,7 +31,9 @@ export function useSession() {
 }
 
 export function useCurrentUser() {
-  return useQuery({
+  const { role: previewRole } = useQaPreview();
+
+  const query = useQuery({
     queryKey: ["current-user"],
     queryFn: async () => {
       const { data } = await supabase.auth.getUser();
@@ -53,6 +57,15 @@ export function useCurrentUser() {
     },
     staleTime: 15_000,
   });
+
+  // DEV/QA only: overlay a preview role so every screen can be reviewed.
+  // Real roles in the database and all RLS rules stay untouched.
+  const data = useMemo(() => {
+    if (!QA_ENABLED || !previewRole || !query.data) return query.data;
+    return { ...query.data, roles: previewRolesFor(previewRole) as AppRole[] };
+  }, [previewRole, query.data]);
+
+  return { ...query, data } as typeof query;
 }
 
 export function hasRole(roles: AppRole[] | undefined, role: AppRole) {
