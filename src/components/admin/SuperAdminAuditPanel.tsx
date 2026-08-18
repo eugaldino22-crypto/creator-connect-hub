@@ -3,11 +3,6 @@ import { History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyBlock, LoadingBlock } from "@/components/common/StateBlocks";
 
-type AuditProfile = {
-  display_name: string | null;
-  username: string | null;
-};
-
 type AuditRow = {
   id: string;
   actor_user_id: string | null;
