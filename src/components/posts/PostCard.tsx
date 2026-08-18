@@ -1,5 +1,6 @@
+import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Heart, MessageCircle, Lock } from "lucide-react";
+import { Heart, MessageCircle, Lock, Sparkles } from "lucide-react";
 import { UserAvatar } from "@/components/common/UserAvatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -48,6 +49,7 @@ export function PostCard({ post }: { post: Post }) {
     },
     staleTime: 60_000,
   });
+
   async function toggleLike() {
     if (!current?.user.id || busy || locked) return;
     setBusy(true);
@@ -66,55 +68,96 @@ export function PostCard({ post }: { post: Post }) {
     }
     setBusy(false);
   }
+
   const isLiked = likeState.data ?? liked;
+  const username = post.creator?.username ?? "";
+
   return (
-    <article className="surface-card overflow-hidden">
-      <div className="flex items-center gap-3 p-4">
-        <UserAvatar name={post.creator?.display_name} path={post.creator?.avatar_url} />
+    <article className="group overflow-hidden rounded-[1.35rem] border border-white/[0.08] bg-[#0b0d14] shadow-[0_18px_60px_-42px_rgba(184,76,255,0.42)] transition duration-300 hover:-translate-y-0.5 hover:border-brand/20 hover:shadow-[0_24px_72px_-42px_rgba(184,76,255,0.52)]">
+      <div className="relative flex items-center gap-3 border-b border-white/[0.06] px-4 py-4 sm:px-5">
+        <Link
+          to="/c/$username"
+          params={{ username }}
+          className="shrink-0 rounded-full ring-offset-2 transition hover:ring-2 hover:ring-brand/30"
+        >
+          <UserAvatar
+            name={post.creator?.display_name}
+            path={post.creator?.avatar_url}
+            className="size-11"
+          />
+        </Link>
+
         <div className="min-w-0 flex-1">
-          <p className="truncate font-semibold">{post.creator?.display_name ?? "Criador"}</p>
-          <p className="text-xs text-muted-foreground">
-            @{post.creator?.username ?? "criador"} ·{" "}
-            {new Date(post.created_at).toLocaleDateString()}
-          </p>
+          <Link
+            to="/c/$username"
+            params={{ username }}
+            className="block truncate text-[15px] font-semibold transition hover:text-brand"
+          >
+            {post.creator?.display_name ?? "Criador"}
+          </Link>
+          <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted-foreground">
+            <span>@{username || "criador"}</span>
+            <span className="size-1 rounded-full bg-white/20" />
+            <span>{new Date(post.created_at).toLocaleDateString("pt-BR")}</span>
+          </div>
         </div>
+
         {post.visibility === "subscribers" ? (
-          <Badge variant="secondary" className="gap-1">
-            <Lock className="size-3" /> Exclusivo
+          <Badge className="border-brand/15 bg-brand/10 text-brand hover:bg-brand/10">
+            <Lock className="mr-1 size-3" />
+            Exclusivo
           </Badge>
-        ) : null}
+        ) : (
+          <div className="flex size-8 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.02] text-muted-foreground">
+            <Sparkles className="size-3.5" />
+          </div>
+        )}
       </div>
-      <div className="px-4 pb-4">
-        {post.title ? <h2 className="text-lg font-semibold">{post.title}</h2> : null}
+
+      <div className="px-4 pb-4 pt-4 sm:px-5 sm:pb-5">
+        {post.title ? (
+          <h2 className="text-lg font-semibold leading-7 tracking-tight sm:text-xl">{post.title}</h2>
+        ) : null}
+
         {locked ? (
-          <div className="mt-3 rounded-2xl border border-border bg-secondary/40 p-8 text-center">
-            <Lock className="mx-auto size-7 text-primary" />
-            <p className="mt-3 font-medium">Conteúdo exclusivo para assinantes</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Assine este criador para desbloquear a publicação.
+          <div className="relative mt-4 overflow-hidden rounded-[1.15rem] border border-brand/15 bg-[radial-gradient(circle_at_50%_15%,rgba(184,76,255,0.14),transparent_48%),linear-gradient(180deg,rgba(255,255,255,0.025),rgba(255,255,255,0.012))] px-6 py-10 text-center">
+            <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-brand/15 bg-brand/10 text-brand shadow-[0_0_36px_-10px_rgba(184,76,255,0.6)]">
+              <Lock className="size-5" />
+            </div>
+            <p className="mt-4 text-sm font-semibold sm:text-base">Conteúdo exclusivo para assinantes</p>
+            <p className="mx-auto mt-1.5 max-w-sm text-sm leading-6 text-muted-foreground">
+              Assine este criador para desbloquear esta publicação e continuar acompanhando a comunidade.
             </p>
+            {username ? (
+              <Button asChild className="mt-5 rounded-xl px-5">
+                <Link to="/c/$username" params={{ username }}>
+                  Ver comunidade
+                </Link>
+              </Button>
+            ) : null}
           </div>
         ) : (
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-foreground/90">
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-foreground/90">
             {post.body}
           </p>
-        )}{" "}
+        )}
+
         {!locked ? (
-          <div className="mt-4 flex items-center gap-1 border-t border-border pt-2">
+          <div className="mt-5 flex items-center gap-1 border-t border-white/[0.06] pt-2">
             <Button
               variant="ghost"
               size="sm"
-              className="gap-2"
+              className="gap-2 rounded-xl px-3 text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
               disabled={!current?.user.id || busy}
               onClick={toggleLike}
             >
-              <Heart className={isLiked ? "size-4 fill-current text-primary" : "size-4"} />
+              <Heart className={isLiked ? "size-4 fill-current text-brand" : "size-4"} />
               {likes}
             </Button>
             <Button
               variant="ghost"
               size="sm"
-              className="gap-2"
+              className="gap-2 rounded-xl px-3 text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
               onClick={() => setCommentsOpen((v) => !v)}
             >
               <MessageCircle className="size-4" />
@@ -122,6 +165,7 @@ export function PostCard({ post }: { post: Post }) {
             </Button>
           </div>
         ) : null}
+
         {commentsOpen && !locked ? <CommentsPanel postId={post.id} /> : null}
       </div>
     </article>
