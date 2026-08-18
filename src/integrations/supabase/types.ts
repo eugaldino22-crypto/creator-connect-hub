@@ -172,6 +172,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dev_role_grants: {
+        Row: {
+          created_at: string
+          email: string
+          note: string | null
+          roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          note?: string | null
+          roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          note?: string | null
+          roles?: Database["public"]["Enums"]["app_role"][]
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
