@@ -10,13 +10,12 @@ type AuditProfile = {
 
 type AuditRow = {
   id: string;
-  actor_id: string | null;
+  actor_user_id: string | null;
   action: string;
-  setting_key: string | null;
-  old_value: unknown;
-  new_value: unknown;
+  target_type: string;
+  target_id: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
-  profiles: AuditProfile | null;
 };
 
 export function SuperAdminAuditPanel() {
@@ -24,10 +23,8 @@ export function SuperAdminAuditPanel() {
     queryKey: ["super-admin-audit"],
     queryFn: async (): Promise<AuditRow[]> => {
       const { data, error } = await supabase
-        .from("platform_audit_log")
-        .select(
-          "id,actor_id,action,setting_key,old_value,new_value,created_at,profiles:actor_id(display_name,username)",
-        )
+        .from("audit_logs")
+        .select("id,actor_user_id,action,target_type,target_id,metadata,created_at")
         .order("created_at", { ascending: false })
         .limit(200);
 
