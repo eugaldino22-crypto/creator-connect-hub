@@ -426,7 +426,7 @@ function OnboardingPage() {
     setBusy(false);
 
     await navigate({
-      to: role === "creator" ? "/studio" : "/feed",
+      to: "/feed",
     });
   }
 
