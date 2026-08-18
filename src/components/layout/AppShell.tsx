@@ -28,6 +28,7 @@ import { IncomingVideoCallBanner } from "@/components/video/IncomingVideoCallBan
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { GlobalSearch } from "@/components/search/GlobalSearch";
+import { QaBar } from "@/components/dev/QaBar";
 import { cn } from "@/lib/utils";
 
 type NavItem = { to: string; label: string; icon: typeof Compass };
@@ -278,6 +279,8 @@ export function AppShell({ children, title }: { children: ReactNode; title?: str
       </nav>
 
       {isSubscriber ? <IncomingVideoCallBanner /> : null}
+
+      <QaBar />
     </div>
   );
 }
