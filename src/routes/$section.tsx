@@ -375,6 +375,22 @@ function OnboardingPage() {
     setBusy(true);
     setError("");
 
+    if (role === "creator") {
+      const { error: rpcError } = await supabase.rpc("become_creator");
+
+      if (rpcError) {
+        setBusy(false);
+        setError(rpcError.message);
+        return;
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
+      await queryClient.refetchQueries({ queryKey: ["current-user"] });
+      setBusy(false);
+      await navigate({ to: "/studio" });
+      return;
+    }
+
     const { error: roleError } = await supabase.from("user_roles").insert({
       user_id: data.user.id,
       role,
@@ -384,25 +400,6 @@ function OnboardingPage() {
       setBusy(false);
       setError(roleError.message);
       return;
-    }
-
-    if (role === "creator") {
-      const { error: creatorError } = await supabase.from("creator_profiles").upsert(
-        {
-          user_id: data.user.id,
-          is_published: false,
-          commission_rate: 0.15,
-        },
-        {
-          onConflict: "user_id",
-        },
-      );
-
-      if (creatorError) {
-        setBusy(false);
-        setError(creatorError.message);
-        return;
-      }
     }
 
     const { error: profileError } = await supabase
