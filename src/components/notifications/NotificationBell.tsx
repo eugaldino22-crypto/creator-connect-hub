@@ -13,7 +13,7 @@ type NotificationItem = {
   title: string;
   body: string | null;
   link: string | null;
-  is_read: boolean;
+  read_at: string | null;
   created_at: string;
 };
 
@@ -29,7 +29,7 @@ export function NotificationBell() {
     queryFn: async (): Promise<NotificationItem[]> => {
       const { data, error } = await supabase
         .from("notifications")
-        .select("id,type,title,body,link,is_read,created_at")
+        .select("id,type,title,body,link,read_at,created_at")
         .eq("user_id", uid!)
         .order("created_at", { ascending: false })
         .limit(30);
@@ -66,10 +66,10 @@ export function NotificationBell() {
     };
   }, [uid, client]);
 
-  const unread = q.data?.filter((notification) => !notification.is_read).length ?? 0;
+  const unread = q.data?.filter((notification) => !notification.read_at).length ?? 0;
 
   async function markRead(id: string) {
-    await supabase.from("notifications").update({ is_read: true }).eq("id", id).eq("user_id", uid!);
+    await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", id).eq("user_id", uid!);
 
     await client.invalidateQueries({
       queryKey: ["notifications", uid],
@@ -81,9 +81,9 @@ export function NotificationBell() {
 
     await supabase
       .from("notifications")
-      .update({ is_read: true })
+      .update({ read_at: new Date().toISOString() })
       .eq("user_id", uid)
-      .eq("is_read", false);
+      .is("read_at", null);
 
     await client.invalidateQueries({
       queryKey: ["notifications", uid],
@@ -141,14 +141,14 @@ export function NotificationBell() {
                   }}
                   className={cn(
                     "block border-b border-border px-4 py-3 hover:bg-muted/60",
-                    !notification.is_read && "bg-primary/5",
+                    !notification.read_at && "bg-primary/5",
                   )}
                 >
                   <div className="flex gap-3">
                     <span
                       className={cn(
                         "mt-1 size-2 shrink-0 rounded-full",
-                        notification.is_read ? "bg-muted" : "bg-primary",
+                        notification.read_at ? "bg-muted" : "bg-primary",
                       )}
                     />
 

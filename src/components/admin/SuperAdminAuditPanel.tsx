@@ -3,20 +3,14 @@ import { History } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { EmptyBlock, LoadingBlock } from "@/components/common/StateBlocks";
 
-type AuditProfile = {
-  display_name: string | null;
-  username: string | null;
-};
-
 type AuditRow = {
   id: string;
-  actor_id: string | null;
+  actor_user_id: string | null;
   action: string;
-  setting_key: string | null;
-  old_value: unknown;
-  new_value: unknown;
+  target_type: string;
+  target_id: string | null;
+  metadata: Record<string, unknown> | null;
   created_at: string;
-  profiles: AuditProfile | null;
 };
 
 export function SuperAdminAuditPanel() {
@@ -24,10 +18,8 @@ export function SuperAdminAuditPanel() {
     queryKey: ["super-admin-audit"],
     queryFn: async (): Promise<AuditRow[]> => {
       const { data, error } = await supabase
-        .from("platform_audit_log")
-        .select(
-          "id,actor_id,action,setting_key,old_value,new_value,created_at,profiles:actor_id(display_name,username)",
-        )
+        .from("audit_logs")
+        .select("id,actor_user_id,action,target_type,target_id,metadata,created_at")
         .order("created_at", { ascending: false })
         .limit(200);
 
@@ -78,13 +70,12 @@ export function SuperAdminAuditPanel() {
           <div key={row.id} className="p-4">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <p className="font-medium">{row.setting_key ?? row.action}</p>
+                <p className="font-medium">
+                  {(row.metadata?.["key"] as string | undefined) ?? row.target_type}
+                </p>
 
                 <p className="text-xs text-muted-foreground">
-                  {row.profiles?.display_name ??
-                    row.profiles?.username ??
-                    row.actor_id ??
-                    "Super Admin"}{" "}
+                  {row.actor_user_id ?? "Super Admin"}{" "}
                   · {new Date(row.created_at).toLocaleString("pt-BR")}
                 </p>
               </div>
@@ -97,7 +88,7 @@ export function SuperAdminAuditPanel() {
                 <p className="text-[11px] font-medium uppercase text-muted-foreground">Anterior</p>
 
                 <pre className="mt-1 max-h-28 overflow-auto whitespace-pre-wrap break-all text-xs">
-                  {JSON.stringify(row.old_value, null, 2)}
+                  {JSON.stringify(row.metadata?.["old_value"] ?? null, null, 2)}
                 </pre>
               </div>
 
@@ -105,7 +96,7 @@ export function SuperAdminAuditPanel() {
                 <p className="text-[11px] font-medium uppercase text-muted-foreground">Novo</p>
 
                 <pre className="mt-1 max-h-28 overflow-auto whitespace-pre-wrap break-all text-xs">
-                  {JSON.stringify(row.new_value, null, 2)}
+                  {JSON.stringify(row.metadata?.["new_value"] ?? null, null, 2)}
                 </pre>
               </div>
             </div>

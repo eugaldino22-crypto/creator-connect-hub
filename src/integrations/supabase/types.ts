@@ -172,6 +172,27 @@ export type Database = {
         }
         Relationships: []
       }
+      dev_role_grants: {
+        Row: {
+          created_at: string
+          email: string
+          note: string | null
+          roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          note?: string | null
+          roles: Database["public"]["Enums"]["app_role"][]
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          note?: string | null
+          roles?: Database["public"]["Enums"]["app_role"][]
+        }
+        Relationships: []
+      }
       follows: {
         Row: {
           created_at: string
@@ -296,8 +317,11 @@ export type Database = {
           created_at: string
           creator_id: string
           currency: string
+          destination: string | null
           id: string
           notes: string | null
+          rejection_reason: string | null
+          reviewed_at: string | null
           status: Database["public"]["Enums"]["payout_status"]
           updated_at: string
         }
@@ -306,8 +330,11 @@ export type Database = {
           created_at?: string
           creator_id: string
           currency?: string
+          destination?: string | null
           id?: string
           notes?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
           status?: Database["public"]["Enums"]["payout_status"]
           updated_at?: string
         }
@@ -316,8 +343,11 @@ export type Database = {
           created_at?: string
           creator_id?: string
           currency?: string
+          destination?: string | null
           id?: string
           notes?: string | null
+          rejection_reason?: string | null
+          reviewed_at?: string | null
           status?: Database["public"]["Enums"]["payout_status"]
           updated_at?: string
         }
@@ -325,18 +355,21 @@ export type Database = {
       }
       platform_settings: {
         Row: {
+          description: string | null
           key: string
           updated_at: string
           updated_by: string | null
           value: Json
         }
         Insert: {
+          description?: string | null
           key: string
           updated_at?: string
           updated_by?: string | null
           value?: Json
         }
         Update: {
+          description?: string | null
           key?: string
           updated_at?: string
           updated_by?: string | null
@@ -447,6 +480,8 @@ export type Database = {
           id: string
           is_suspended: boolean
           onboarding_completed: boolean
+          phone_number: string | null
+          phone_verified: boolean
           updated_at: string
           username: string | null
         }
@@ -460,6 +495,8 @@ export type Database = {
           id: string
           is_suspended?: boolean
           onboarding_completed?: boolean
+          phone_number?: string | null
+          phone_verified?: boolean
           updated_at?: string
           username?: string | null
         }
@@ -473,6 +510,8 @@ export type Database = {
           id?: string
           is_suspended?: boolean
           onboarding_completed?: boolean
+          phone_number?: string | null
+          phone_verified?: boolean
           updated_at?: string
           username?: string | null
         }
@@ -555,42 +594,54 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          amount_cents: number
           canceled_at: string | null
           created_at: string
+          creator_amount_cents: number
           creator_id: string
+          currency: string
           current_period_end: string | null
           current_period_start: string | null
           gateway: string | null
           gateway_subscription_id: string | null
           id: string
+          paid_at: string | null
           plan_id: string | null
           status: Database["public"]["Enums"]["subscription_status"]
           subscriber_id: string
           updated_at: string
         }
         Insert: {
+          amount_cents?: number
           canceled_at?: string | null
           created_at?: string
+          creator_amount_cents?: number
           creator_id: string
+          currency?: string
           current_period_end?: string | null
           current_period_start?: string | null
           gateway?: string | null
           gateway_subscription_id?: string | null
           id?: string
+          paid_at?: string | null
           plan_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
           subscriber_id: string
           updated_at?: string
         }
         Update: {
+          amount_cents?: number
           canceled_at?: string | null
           created_at?: string
+          creator_amount_cents?: number
           creator_id?: string
+          currency?: string
           current_period_end?: string | null
           current_period_start?: string | null
           gateway?: string | null
           gateway_subscription_id?: string | null
           id?: string
+          paid_at?: string | null
           plan_id?: string | null
           status?: Database["public"]["Enums"]["subscription_status"]
           subscriber_id?: string
@@ -680,6 +731,42 @@ export type Database = {
         }
         Relationships: []
       }
+      video_calls: {
+        Row: {
+          created_at: string
+          creator_id: string
+          ended_at: string | null
+          id: string
+          initiated_by: string | null
+          room_name: string
+          started_at: string | null
+          status: string
+          subscriber_id: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          ended_at?: string | null
+          id?: string
+          initiated_by?: string | null
+          room_name: string
+          started_at?: string | null
+          status?: string
+          subscriber_id: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          ended_at?: string | null
+          id?: string
+          initiated_by?: string | null
+          room_name?: string
+          started_at?: string | null
+          status?: string
+          subscriber_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -702,6 +789,18 @@ export type Database = {
         Returns: boolean
       }
       is_super_admin: { Args: never; Returns: boolean }
+      request_creator_payout: {
+        Args: { _amount_cents: number; _currency: string; _destination: string }
+        Returns: string
+      }
+      review_creator_payout: {
+        Args: { _decision: string; _payout_id: string; _reason?: string }
+        Returns: undefined
+      }
+      update_platform_setting: {
+        Args: { _key: string; _value: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role: "subscriber" | "creator" | "admin" | "super_admin"
